@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-05-28 15:33:08
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-05-28 15:33:13
+ * @LastEditTime: 2025-05-29 17:30:25
  * @Description: 组合和管理所有UI组件
  */
 
@@ -29,6 +29,13 @@ class PlayerUI {
         // 播放模式
         this.playMode = options.playMode || PLAY_MODES.LIVE;
 
+        // 确保点播模式下UI组件配置包含进度条
+        if (this.playMode === PLAY_MODES.VOD && options.components) {
+            if (!options.components.includes(UI_COMPONENT_TYPES.PROGRESS)) {
+                options.components.push(UI_COMPONENT_TYPES.PROGRESS);
+            }
+        }
+
         // 创建UI容器
         this.uiContainer = document.createElement('div');
         this.uiContainer.className = 'flv-player-ui';
@@ -47,7 +54,13 @@ class PlayerUI {
      */
     _initComponents() {
         // 根据配置和播放模式初始化组件
-        const components = this.options.components || [];
+        const components = this.options.components || [
+            UI_COMPONENT_TYPES.PLAY_PAUSE,
+            UI_COMPONENT_TYPES.PROGRESS,
+            UI_COMPONENT_TYPES.TIME_DISPLAY,
+            UI_COMPONENT_TYPES.VOLUME,
+            UI_COMPONENT_TYPES.FULLSCREEN
+        ];
 
         // 控制面板
         if (components.includes(UI_COMPONENT_TYPES.PLAY_PAUSE) ||
@@ -56,9 +69,8 @@ class PlayerUI {
             this.components.controlPanel = new ControlPanel(this.player, this.uiContainer);
         }
 
-        // 进度条 - 仅在点播模式或明确指定时显示
-        if ((this.playMode === PLAY_MODES.VOD || this.options.alwaysShowProgress) &&
-            components.includes(UI_COMPONENT_TYPES.PROGRESS)) {
+        // 进度条 - 在点播模式下始终显示，无论配置如何
+        if (this.playMode === PLAY_MODES.VOD || this.options.alwaysShowProgress) {
             this.components.progressBar = new ProgressBar(this.player, this.uiContainer);
         }
 

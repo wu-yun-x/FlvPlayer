@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-05-28 17:20:15
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-05-29 15:53:04
+ * @LastEditTime: 2025-05-29 17:59:08
  * @Description: 定义播放器常量
  */
 
@@ -228,7 +228,7 @@ export const DEFAULT_CONFIG = {
     // 是否为直播
     isLive: false,
     // 显示控制栏
-    controls: false,
+    controls: true,
     // 默认音量
     volume: 1.0,
     // 最大错误重试次数

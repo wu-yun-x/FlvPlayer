@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-05-28 15:33:08
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-05-29 17:28:16
+ * @LastEditTime: 2025-05-29 17:35:26
  * @Description: 进度条组件
  */
 
@@ -31,6 +31,11 @@ class ProgressBar {
         // 初始化进度
         this._updateProgress(0);
         this._updateBuffered(0);
+
+        // 调试日志
+        if (player.options.debug) {
+            console.log(`[ProgressBar] 初始化完成，模式: ${this.isVod ? '点播' : '直播'}`);
+        }
     }
 
     /**
@@ -70,6 +75,9 @@ class ProgressBar {
         // 如果不是点播模式，添加提示类
         if (!this.isVod) {
             this.progressContainer.classList.add('live-mode');
+        } else {
+            // 点播模式下确保进度点可见
+            this.progressDot.style.display = 'block';
         }
     }
 
@@ -102,6 +110,20 @@ class ProgressBar {
                 this._updateProgress(1); // 播放结束时进度为100%
             }
         });
+
+        // 监听元数据加载事件，确保在视频元数据加载后更新UI
+        this.player.on('metadataArrived', () => {
+            if (this.isVod && this.player.videoElement) {
+                // 更新总时长显示
+                const duration = this.player.videoElement.duration;
+                if (!isNaN(duration) && isFinite(duration)) {
+                    // 调试日志
+                    if (this.player.options.debug) {
+                        console.log(`[ProgressBar] 视频时长: ${duration}秒`);
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -122,6 +144,11 @@ class ProgressBar {
         if (!isNaN(duration) && isFinite(duration)) {
             // 跳转到新位置
             this.player.seek(duration * percent);
+
+            // 调试日志
+            if (this.player.options.debug) {
+                console.log(`[ProgressBar] 跳转到: ${(duration * percent).toFixed(2)}秒`);
+            }
         }
 
         // 阻止冒泡和默认行为
@@ -196,7 +223,7 @@ class ProgressBar {
 
         // 计算提示位置
         const rect = this.progressContainer.getBoundingClientRect();
-        const tooltipWidth = this.timeTooltip.offsetWidth;
+        const tooltipWidth = this.timeTooltip.offsetWidth || 40; // 如果未渲染，给一个默认宽度
         const left = event.clientX - rect.left;
 
         // 确保提示不超出边界
@@ -225,6 +252,11 @@ class ProgressBar {
         if (!isNaN(currentTime) && !isNaN(duration) && duration > 0) {
             const percent = currentTime / duration;
             this._updateProgress(percent);
+
+            // 调试日志
+            if (this.player.options.debug && Math.floor(currentTime) % 5 === 0) {
+                console.log(`[ProgressBar] 当前时间: ${currentTime.toFixed(2)}秒, 进度: ${(percent * 100).toFixed(2)}%`);
+            }
         }
     }
 
@@ -246,6 +278,11 @@ class ProgressBar {
             const bufferedEnd = video.buffered.end(video.buffered.length - 1);
             const percent = bufferedEnd / video.duration;
             this._updateBuffered(percent);
+
+            // 调试日志
+            if (this.player.options.debug && Math.floor(bufferedEnd) % 10 === 0) {
+                console.log(`[ProgressBar] 已缓冲: ${bufferedEnd.toFixed(2)}秒, 缓冲进度: ${(percent * 100).toFixed(2)}%`);
+            }
         }
     }
 

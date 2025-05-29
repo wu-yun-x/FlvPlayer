@@ -793,32 +793,9 @@
                 if (currentMode === 'vod' && player) {
                     initPlayer();
                     player.load(vodUrlInput.value);
-
-                    // 调试日志
-                    if (debugCheckbox.checked) {
-                        console.log('[DEBUG] 加载点播视频:', vodUrlInput.value);
-                        console.log('[DEBUG] 播放器配置:', player.options);
-                    }
                 }
             });
         });
-
-        // 添加调试按钮
-        const debugBtn = document.createElement('button');
-        debugBtn.className = 'btn';
-        debugBtn.textContent = '打印调试信息';
-        debugBtn.addEventListener('click', () => {
-            if (player) {
-                console.log('[DEBUG] 当前播放器实例:', player);
-                console.log('[DEBUG] UI组件:', player.ui ? player.ui.components : 'UI未初始化');
-                console.log('[DEBUG] 播放模式:', player.options.playMode);
-                console.log('[DEBUG] 是否为直播:', player.options.isLive);
-                console.log('[DEBUG] 视频元素:', player.videoElement);
-            } else {
-                console.log('[DEBUG] 播放器未初始化');
-            }
-        });
-        document.querySelector('.controls').appendChild(debugBtn);
     </script>
 </body>
 

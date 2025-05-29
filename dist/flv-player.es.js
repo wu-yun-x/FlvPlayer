@@ -1,5 +1,5 @@
-import s from "mpegts.js";
-class p {
+import r from "mpegts.js";
+class m {
   constructor() {
     this._events = {};
   }
@@ -14,15 +14,15 @@ class p {
     return i !== -1 && (this._events[e].splice(i, 1), this._events[e].length === 0 && delete this._events[e]), this;
   }
   once(e, t) {
-    const i = (...r) => {
-      this.off(e, i), t.apply(this, r);
+    const i = (...s) => {
+      this.off(e, i), t.apply(this, s);
     };
     return i.originalListener = t, this.on(e, i);
   }
   emit(e, ...t) {
-    return this._events[e] ? ([...this._events[e]].forEach((r) => {
+    return this._events[e] ? ([...this._events[e]].forEach((s) => {
       try {
-        r.apply(this, t);
+        s.apply(this, t);
       } catch (l) {
         console.error(`Error in event listener for ${e}:`, l);
       }
@@ -135,13 +135,13 @@ const a = {
   MP4: "mp4",
   // 原生HTML5支持的格式
   NATIVE: "native"
-}, m = {
+}, R = {
   MPEGTS: "mpegts",
   FLVJS: "flvjs",
   HLSJS: "hlsjs",
   DASHJS: "dashjs",
   NATIVE: "native"
-}, R = {
+}, f = {
   // 直播模式
   LIVE: "live",
   // 点播模式
@@ -165,7 +165,13 @@ const a = {
   // 音量控制
   VOLUME: "volume",
   // 全屏按钮
-  FULLSCREEN: "fullscreen"
+  FULLSCREEN: "fullscreen",
+  // 画中画按钮
+  PIP: "pip",
+  // 设置按钮
+  SETTINGS: "settings",
+  // 缩略图
+  THUMBNAIL: "thumbnail"
 }, u = {
   // 自动播放
   autoplay: !1,
@@ -174,7 +180,7 @@ const a = {
   // 是否为直播
   isLive: !1,
   // 显示控制栏
-  controls: !1,
+  controls: !0,
   // 默认音量
   volume: 1,
   // 最大错误重试次数
@@ -184,9 +190,9 @@ const a = {
   // 调试模式
   debug: !1,
   // 默认适配器
-  adapter: m.MPEGTS,
+  adapter: R.MPEGTS,
   // 播放模式
-  playMode: R.LIVE,
+  playMode: f.LIVE,
   // 缓冲区大小(秒)
   bufferSize: 0.5,
   // 低延迟模式
@@ -203,7 +209,7 @@ const a = {
     ]
   }
 };
-class _ extends p {
+class _ extends m {
   constructor(e = {}) {
     super(), this.options = this._mergeOptions(e), this.state = a.IDLE, this.container = null, this.videoElement = null, this.errorCount = 0, this.maxErrorRetries = this.options.maxErrorRetries || u.maxErrorRetries, this.retryTimer = null, this._init();
   }
@@ -355,7 +361,7 @@ class _ extends p {
 }
 class y {
   constructor(e, t = {}) {
-    if (!s || !s.isSupported())
+    if (!r || !r.isSupported())
       throw new Error("mpegts.js is not supported in this browser");
     this.videoElement = e, this.options = t, this.player = null, this.eventHandlers = {}, this.mediaInfo = null, this.statisticsInfo = null, this.retryTimes = 0, this.maxRetryTimes = t.maxErrorRetries || 3, this.retryInterval = t.retryInterval || 3e3, this.isLive = t.isLive || !1, this.currentUrl = "", this.connectionState = {
       isConnecting: !1,
@@ -368,7 +374,7 @@ class y {
    * 初始化mpegts.js播放器
    */
   init() {
-    if (this.options.debug ? (s.LoggingControl.enableVerbose = !0, s.LoggingControl.enableInfo = !0, s.LoggingControl.enableDebug = !0) : (s.LoggingControl.enableVerbose = !1, s.LoggingControl.enableInfo = !1, s.LoggingControl.enableDebug = !1), !s.getFeatureList().mseLivePlayback)
+    if (this.options.debug ? (r.LoggingControl.enableVerbose = !0, r.LoggingControl.enableInfo = !0, r.LoggingControl.enableDebug = !0) : (r.LoggingControl.enableVerbose = !1, r.LoggingControl.enableInfo = !1, r.LoggingControl.enableDebug = !1), !r.getFeatureList().mseLivePlayback)
       throw new Error("MSE live playback is not supported in this browser");
     return this;
   }
@@ -383,11 +389,11 @@ class y {
     if (this.currentUrl === e && this.player && this.connectionState.isConnected)
       return console.log("Already connected to this URL, ignoring duplicate load request"), !0;
     this.connectionState.isConnecting && this._clearReconnectTimer(), this._clearBufferCleanupTimer(), this.currentUrl = e, this.isLive = t, this.connectionState.isConnecting = !0, this.connectionState.isConnected = !1, this.connectionState.lastConnectTime = Date.now(), this.destroy();
-    const i = this._getUrlType(e), r = this._getMediaType(e), l = this._createPlayerConfig(e, i, r);
+    const i = this._getUrlType(e), s = this._getMediaType(e), l = this._createPlayerConfig(e, i, s);
     try {
-      return this.player = s.createPlayer(l), this._bindEvents(), this.player.attachMediaElement(this.videoElement), this.player.load(), this.isLive && this.options.lowLatency && this._startBufferCleanup(), !0;
-    } catch (f) {
-      return this.connectionState.isConnecting = !1, this._emitError(o.INIT_ERROR, "Failed to create mpegts.js player", f), !1;
+      return this.player = r.createPlayer(l), this._bindEvents(), this.player.attachMediaElement(this.videoElement), this.player.load(), this.isLive && this.options.lowLatency && this._startBufferCleanup(), !0;
+    } catch (p) {
+      return this.connectionState.isConnecting = !1, this._emitError(o.INIT_ERROR, "Failed to create mpegts.js player", p), !1;
     }
   }
   /**
@@ -477,8 +483,8 @@ class y {
     this.eventHandlers[e] && this.eventHandlers[e].forEach((i) => {
       try {
         i(t);
-      } catch (r) {
-        console.error(`Error in event handler for ${e}:`, r);
+      } catch (s) {
+        console.error(`Error in event handler for ${e}:`, s);
       }
     });
   }
@@ -490,12 +496,12 @@ class y {
    * @private
    */
   _emitError(e, t, i) {
-    const r = {
+    const s = {
       type: e,
       message: t,
       originalError: i
     };
-    this._emit(n.ERROR, r);
+    this._emit(n.ERROR, s);
   }
   /**
    * 绑定mpegts.js事件
@@ -504,37 +510,37 @@ class y {
   _bindEvents() {
     if (!this.player) return;
     this._eventHandlers = {}, this._eventHandlers.error = (t, i) => {
-      let r = o.UNKNOWN, l = "Unknown error";
+      let s = o.UNKNOWN, l = "Unknown error";
       switch (t) {
-        case s.ErrorTypes.NETWORK_ERROR:
-          r = o.NETWORK_ERROR, l = `Network error: ${i.message || "unknown"}`, this._tryReconnect();
+        case r.ErrorTypes.NETWORK_ERROR:
+          s = o.NETWORK_ERROR, l = `Network error: ${i.message || "unknown"}`, this._tryReconnect();
           break;
-        case s.ErrorTypes.MEDIA_ERROR:
-          r = o.MEDIA_ERROR, l = `Media error: ${i.message || "unknown"}`;
+        case r.ErrorTypes.MEDIA_ERROR:
+          s = o.MEDIA_ERROR, l = `Media error: ${i.message || "unknown"}`;
           break;
-        case s.ErrorTypes.OTHER_ERROR:
-          i.code === -2 ? (r = o.DECODE_ERROR, l = "Decode error") : l = `Other error: ${i.message || "unknown"}`;
+        case r.ErrorTypes.OTHER_ERROR:
+          i.code === -2 ? (s = o.DECODE_ERROR, l = "Decode error") : l = `Other error: ${i.message || "unknown"}`;
           break;
       }
-      this._emitError(r, l, { errorType: t, errorDetail: i });
-    }, this.player.on(s.Events.ERROR, this._eventHandlers.error), this._eventHandlers.mediaInfo = (t) => {
+      this._emitError(s, l, { errorType: t, errorDetail: i });
+    }, this.player.on(r.Events.ERROR, this._eventHandlers.error), this._eventHandlers.mediaInfo = (t) => {
       this.mediaInfo = t, this.connectionState.isConnecting = !1, this.connectionState.isConnected = !0, this._emit(n.READY, { mediaInfo: t });
-    }, this.player.on(s.Events.MEDIA_INFO, this._eventHandlers.mediaInfo), this._eventHandlers.statisticsInfo = (t) => {
+    }, this.player.on(r.Events.MEDIA_INFO, this._eventHandlers.mediaInfo), this._eventHandlers.statisticsInfo = (t) => {
       this.statisticsInfo = t, this._emit(n.STATS_UPDATE, { statisticsInfo: t });
-    }, this.player.on(s.Events.STATISTICS_INFO, this._eventHandlers.statisticsInfo);
+    }, this.player.on(r.Events.STATISTICS_INFO, this._eventHandlers.statisticsInfo);
     const e = {
-      [s.Events.LOADING_COMPLETE]: n.READY,
-      [s.Events.RECOVERED_EARLY_EOF]: n.READY,
-      [s.Events.METADATA_ARRIVED]: "metadataArrived",
-      [s.Events.SCRIPTDATA_ARRIVED]: "scriptdataArrived",
-      [s.Events.TIMED_ID3_METADATA_ARRIVED]: "timedID3MetadataArrived",
-      [s.Events.PES_PRIVATE_DATA_DESCRIPTOR]: "pesPrivateDataDescriptor",
-      [s.Events.PES_PRIVATE_DATA_ARRIVED]: "pesPrivateDataArrived",
-      [s.Events.SMPTE2038_METADATA_ARRIVED]: "smpte2038MetadataArrived"
+      [r.Events.LOADING_COMPLETE]: n.READY,
+      [r.Events.RECOVERED_EARLY_EOF]: n.READY,
+      [r.Events.METADATA_ARRIVED]: "metadataArrived",
+      [r.Events.SCRIPTDATA_ARRIVED]: "scriptdataArrived",
+      [r.Events.TIMED_ID3_METADATA_ARRIVED]: "timedID3MetadataArrived",
+      [r.Events.PES_PRIVATE_DATA_DESCRIPTOR]: "pesPrivateDataDescriptor",
+      [r.Events.PES_PRIVATE_DATA_ARRIVED]: "pesPrivateDataArrived",
+      [r.Events.SMPTE2038_METADATA_ARRIVED]: "smpte2038MetadataArrived"
     };
     this._eventHandlers.otherEvents = {}, Object.keys(e).forEach((t) => {
-      const i = (r) => {
-        this._emit(e[t], r);
+      const i = (s) => {
+        this._emit(e[t], s);
       };
       this._eventHandlers.otherEvents[t] = i, this.player.on(t, i);
     });
@@ -545,16 +551,16 @@ class y {
    */
   _unbindEvents() {
     if (!(!this.player || !this._eventHandlers)) {
-      if (this._eventHandlers.error && this.player.off(s.Events.ERROR, this._eventHandlers.error), this._eventHandlers.mediaInfo && this.player.off(s.Events.MEDIA_INFO, this._eventHandlers.mediaInfo), this._eventHandlers.statisticsInfo && this.player.off(s.Events.STATISTICS_INFO, this._eventHandlers.statisticsInfo), this._eventHandlers.otherEvents) {
+      if (this._eventHandlers.error && this.player.off(r.Events.ERROR, this._eventHandlers.error), this._eventHandlers.mediaInfo && this.player.off(r.Events.MEDIA_INFO, this._eventHandlers.mediaInfo), this._eventHandlers.statisticsInfo && this.player.off(r.Events.STATISTICS_INFO, this._eventHandlers.statisticsInfo), this._eventHandlers.otherEvents) {
         const e = {
-          [s.Events.LOADING_COMPLETE]: !0,
-          [s.Events.RECOVERED_EARLY_EOF]: !0,
-          [s.Events.METADATA_ARRIVED]: !0,
-          [s.Events.SCRIPTDATA_ARRIVED]: !0,
-          [s.Events.TIMED_ID3_METADATA_ARRIVED]: !0,
-          [s.Events.PES_PRIVATE_DATA_DESCRIPTOR]: !0,
-          [s.Events.PES_PRIVATE_DATA_ARRIVED]: !0,
-          [s.Events.SMPTE2038_METADATA_ARRIVED]: !0
+          [r.Events.LOADING_COMPLETE]: !0,
+          [r.Events.RECOVERED_EARLY_EOF]: !0,
+          [r.Events.METADATA_ARRIVED]: !0,
+          [r.Events.SCRIPTDATA_ARRIVED]: !0,
+          [r.Events.TIMED_ID3_METADATA_ARRIVED]: !0,
+          [r.Events.PES_PRIVATE_DATA_DESCRIPTOR]: !0,
+          [r.Events.PES_PRIVATE_DATA_ARRIVED]: !0,
+          [r.Events.SMPTE2038_METADATA_ARRIVED]: !0
         };
         Object.keys(e).forEach((t) => {
           const i = this._eventHandlers.otherEvents[t];
@@ -623,7 +629,7 @@ class y {
    * @private
    */
   _createPlayerConfig(e, t, i) {
-    const r = {
+    const s = {
       type: i.toLowerCase(),
       url: e,
       isLive: this.isLive,
@@ -632,7 +638,7 @@ class y {
       hasAudio: !0,
       hasVideo: !0
     };
-    return this.isLive ? (r.enableStashBuffer = !1, r.stashInitialSize = 32, r.liveBufferLatencyChasing = !0, r.liveBufferLatencyMaxLatency = 0.8, r.liveBufferLatencyMinRemain = 0.1, r.liveSync = !0, r.lazyLoad = !1, r.fixAudioTimestampGap = !0, r.seekType = "range", r.rangeLoadZeroStart = !1, r.forceKeyFrameOnDiscontinuity = !0, r.accurateSeek = !1, this.options.lowLatency && (r.liveBufferLatencyMaxLatency = 0.5, r.liveBufferLatencyMinRemain = 0.05, r.autoCleanupSourceBuffer = !0, r.autoCleanupMaxBackwardDuration = 1, r.autoCleanupMinBackwardDuration = 0.5)) : (r.enableStashBuffer = !0, r.stashInitialSize = 1024 * 64, r.lazyLoad = !0), this.options.mpegtsConfig && Object.assign(r, this.options.mpegtsConfig), r;
+    return this.isLive ? (s.enableStashBuffer = !1, s.stashInitialSize = 32, s.liveBufferLatencyChasing = !0, s.liveBufferLatencyMaxLatency = 0.8, s.liveBufferLatencyMinRemain = 0.1, s.liveSync = !0, s.lazyLoad = !1, s.fixAudioTimestampGap = !0, s.seekType = "range", s.rangeLoadZeroStart = !1, s.forceKeyFrameOnDiscontinuity = !0, s.accurateSeek = !1, this.options.lowLatency && (s.liveBufferLatencyMaxLatency = 0.5, s.liveBufferLatencyMinRemain = 0.05, s.autoCleanupSourceBuffer = !0, s.autoCleanupMaxBackwardDuration = 1, s.autoCleanupMinBackwardDuration = 0.5)) : (s.enableStashBuffer = !0, s.stashInitialSize = 1024 * 64, s.lazyLoad = !0), this.options.mpegtsConfig && Object.assign(s, this.options.mpegtsConfig), s;
   }
   /**
    * 清除缓冲区清理定时器
@@ -651,8 +657,8 @@ class y {
         try {
           const e = this.videoElement;
           if (!e || !e.buffered || e.buffered.length === 0) return;
-          const t = e.currentTime, i = e.buffered.end(e.buffered.length - 1), r = i - t;
-          if (r > 2 && (this.options.debug && console.log(`缓冲区过大 (${r.toFixed(2)}s)，尝试清理...`), this.player.cleanupSourceBuffer && this.player.cleanupSourceBuffer(), r > 3 && this.player.currentTime)) {
+          const t = e.currentTime, i = e.buffered.end(e.buffered.length - 1), s = i - t;
+          if (s > 2 && (this.options.debug && console.log(`缓冲区过大 (${s.toFixed(2)}s)，尝试清理...`), this.player.cleanupSourceBuffer && this.player.cleanupSourceBuffer(), s > 3 && this.player.currentTime)) {
             const l = i - 1;
             this.options.debug && console.log(`延迟过大，执行追帧: ${t.toFixed(2)}s -> ${l.toFixed(2)}s`), this.player.currentTime = l;
           }
@@ -770,17 +776,19 @@ class T extends _ {
    * @param {number} time - 跳转时间（秒）
    */
   seek(e) {
-    if (this.options.isLive) {
+    if (!(!this.options.isLive && this.options.playMode !== f.LIVE)) {
       this._log("Seek is not supported in live mode", "warn");
       return;
     }
     try {
-      this.adapter.seek(e) && (this.emit(n.SEEKING, { time: e }), this._log(`Seeking to ${e} seconds`));
-    } catch (t) {
+      this.options.debug && this._log(`Seeking to ${e} seconds`), this.adapter.seek(e) && (this.emit(n.SEEKING, { time: e }), this._log(`Seeking to ${e} seconds`), setTimeout(() => {
+        this.emit(n.TIME_UPDATE, { currentTime: e });
+      }, 50));
+    } catch (i) {
       this._handleError({
         type: o.MEDIA_ERROR,
         message: `Failed to seek to ${e} seconds`,
-        originalError: t
+        originalError: i
       });
     }
   }
@@ -827,12 +835,12 @@ class T extends _ {
    * @returns {boolean} 是否支持
    */
   static isSupported() {
-    return s && s.isSupported();
+    return r && r.isSupported();
   }
 }
-const g = "1.0.0", A = T.isSupported;
+const v = "1.0.0", A = T.isSupported;
 export {
-  m as ADAPTER_TYPES,
+  R as ADAPTER_TYPES,
   d as CONNECTION_TYPES,
   u as DEFAULT_CONFIG,
   o as ERROR_TYPES,
@@ -840,9 +848,10 @@ export {
   h as MEDIA_TYPES,
   n as PLAYER_EVENTS,
   a as PLAYER_STATES,
-  R as PLAY_MODES,
+  f as PLAY_MODES,
+  c as UI_COMPONENT_TYPES,
   T as default,
   A as isSupported,
-  g as version
+  v as version
 };
 //# sourceMappingURL=flv-player.es.js.map

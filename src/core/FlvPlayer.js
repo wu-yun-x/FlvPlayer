@@ -209,17 +209,30 @@ class FlvPlayer extends BasePlayer {
      * @param {number} time - 跳转时间（秒）
      */
     seek(time) {
-        if (this.options.isLive) {
+        // 检查是否为点播模式
+        const isVod = !this.options.isLive && this.options.playMode !== PLAY_MODES.LIVE;
+
+        if (!isVod) {
             this._log('Seek is not supported in live mode', 'warn');
             return;
         }
 
         try {
+            // 调试日志
+            if (this.options.debug) {
+                this._log(`Seeking to ${time} seconds`);
+            }
+
             const result = this.adapter.seek(time);
 
             if (result) {
                 this.emit(PLAYER_EVENTS.SEEKING, { time });
                 this._log(`Seeking to ${time} seconds`);
+
+                // 触发时间更新事件，确保UI更新
+                setTimeout(() => {
+                    this.emit(PLAYER_EVENTS.TIME_UPDATE, { currentTime: time });
+                }, 50);
             }
         } catch (error) {
             this._handleError({

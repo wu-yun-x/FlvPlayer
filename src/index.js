@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-05-28 18:35:15
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-05-28 18:35:15
+ * @LastEditTime: 2025-05-29 17:50:58
  * @Description: FlvPlayer库入口文件
  */
 
@@ -15,7 +15,8 @@ import {
     CONNECTION_TYPES,
     PLAY_MODES,
     ADAPTER_TYPES,
-    DEFAULT_CONFIG
+    DEFAULT_CONFIG,
+    UI_COMPONENT_TYPES
 } from './constants';
 
 // 导出版本信息
@@ -35,7 +36,8 @@ export {
     MEDIA_TYPES,
     CONNECTION_TYPES,
     PLAY_MODES,
-    ADAPTER_TYPES
+    ADAPTER_TYPES,
+    UI_COMPONENT_TYPES
 };
 
 // 导出默认配置

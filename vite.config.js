@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-05-28 15:56:05
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-05-28 15:56:16
+ * @LastEditTime: 2025-05-29 18:38:43
  * @Description: vite配置文件
  */
 import { defineConfig } from 'vite';
@@ -28,6 +28,12 @@ export default defineConfig({
         // 生成 sourcemap
         sourcemap: true,
         // 清空输出目录
-        emptyOutDir: true
+        emptyOutDir: false,
+        // 最小化混淆，方便调试
+        minify: false
+    },
+    // 启用源码映射
+    css: {
+        devSourcemap: true
     }
 });

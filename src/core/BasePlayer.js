@@ -2,12 +2,13 @@
  * @Author: st004362
  * @Date: 2025-05-28 15:30:15
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-05-28 17:56:43
+ * @LastEditTime: 2025-05-29 19:15:25
  * @Description: 定义播放器接口和共享功能
  */
 
 import EventEmitter from '../utils/EventEmitter';
 import { PLAYER_STATES, PLAYER_EVENTS, ERROR_TYPES, DEFAULT_CONFIG } from '../constants';
+import PlayerUI from '../ui/PlayerUI';
 
 class BasePlayer extends EventEmitter {
     constructor(options = {}) {
@@ -36,6 +37,10 @@ class BasePlayer extends EventEmitter {
         this._initContainer()
         this._initVideoElement()
         this._bindEvents()
+
+        // 初始化UI组件
+        this._initUI()
+
         this.setState(PLAYER_STATES.INITIALIZED)
         this.emit(PLAYER_EVENTS.INITIALIZED, this)
 
@@ -86,6 +91,29 @@ class BasePlayer extends EventEmitter {
 
         // 添加到容器
         this.container.appendChild(this.videoElement)
+    }
+
+    /**
+     * 初始化UI组件
+     * @private
+     */
+    _initUI() {
+        // 如果启用了UI
+        if (this.options.ui && this.options.ui.enabled !== false) {
+            try {
+                // 创建UI实例
+                this.ui = new PlayerUI(this, {
+                    ...this.options.ui,
+                    playMode: this.options.playMode
+                });
+
+                if (this.options.debug) {
+                    this._log('UI组件初始化成功');
+                }
+            } catch (error) {
+                this._log(`UI组件初始化失败: ${error.message}`, 'error');
+            }
+        }
     }
 
     _bindEvents() {
@@ -236,6 +264,19 @@ class BasePlayer extends EventEmitter {
 
         // 清除重试计时器
         this._clearRetryTimer();
+
+        // 销毁UI组件
+        if (this.ui) {
+            try {
+                this.ui.destroy();
+                this.ui = null;
+                if (this.options.debug) {
+                    this._log('UI组件已销毁');
+                }
+            } catch (error) {
+                this._log(`UI组件销毁失败: ${error.message}`, 'error');
+            }
+        }
 
         // 移除事件监听
         if (this.videoElement) {
