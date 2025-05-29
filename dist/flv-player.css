@@ -1,0 +1,278 @@
+/*
+ * FlvPlayer CSS样式
+ * 包含所有UI组件的样式
+ */
+
+/* 播放器容器 */
+.flv-player-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  overflow: hidden;
+}
+
+/* UI容器 */
+.flv-player-ui {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: white;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.flv-player-container:hover .flv-player-ui {
+  opacity: 1;
+}
+
+/* 模式指示器 */
+.flv-player-mode-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: white;
+}
+
+.flv-player-mode-indicator.live {
+  background-color: rgba(255, 0, 0, 0.7);
+}
+
+.flv-player-mode-indicator.vod {
+  background-color: rgba(0, 128, 255, 0.7);
+}
+
+/* 进度条 */
+.flv-player-progress-container {
+  position: relative;
+  height: 5px;
+  background-color: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+.flv-player-progress-container.live-mode {
+  cursor: default;
+  background-color: rgba(255, 0, 0, 0.3);
+}
+
+.flv-player-buffered-bar {
+  position: absolute;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.flv-player-progress-bar {
+  position: absolute;
+  height: 100%;
+  background-color: #4caf50;
+}
+
+.flv-player-progress-dot {
+  position: absolute;
+  right: -5px;
+  top: -5px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  display: none;
+}
+
+.flv-player-progress-container:hover .flv-player-progress-dot {
+  display: block;
+}
+
+.flv-player-time-tooltip {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 12px;
+  bottom: 15px;
+  transform: translateX(-50%);
+  display: none;
+}
+
+/* 控制面板 */
+.flv-player-control-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+}
+
+.flv-player-left-controls,
+.flv-player-center-controls,
+.flv-player-right-controls {
+  display: flex;
+  align-items: center;
+}
+
+/* 按钮样式 */
+.flv-player-play-pause,
+.flv-player-volume-button,
+.flv-player-fullscreen {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  margin: 0 5px;
+}
+
+.flv-player-play-pause svg,
+.flv-player-volume-button svg,
+.flv-player-fullscreen svg {
+  width: 100%;
+  height: 100%;
+  fill: white;
+}
+
+/* 时间显示 */
+.flv-player-time-display {
+  margin: 0 10px;
+  font-size: 14px;
+}
+
+.flv-player-live-indicator {
+  background-color: red;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+/* 音量控制 */
+.flv-player-volume-control {
+  display: flex;
+  align-items: center;
+}
+
+.flv-player-volume-slider-container {
+  width: 0;
+  overflow: hidden;
+  transition: width 0.3s;
+}
+
+.flv-player-volume-control:hover .flv-player-volume-slider-container {
+  width: 80px;
+}
+
+.flv-player-volume-slider {
+  width: 80px;
+  margin: 0 10px;
+  -webkit-appearance: none;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  outline: none;
+  border-radius: 2px;
+}
+
+.flv-player-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+}
+
+.flv-player-volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+}
+
+/* 缩略图 */
+.flv-player-thumbnail-container {
+  position: relative;
+}
+
+.flv-player-thumbnail {
+  position: absolute;
+  background-size: cover;
+  border: 2px solid white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.flv-player-thumbnail-time {
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 2px 0;
+}
+
+/* 加载动画 */
+.flv-player-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.flv-player-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: flv-player-spin 1s linear infinite;
+}
+
+@keyframes flv-player-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 错误提示 */
+.flv-player-error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.flv-player-error-icon {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.flv-player-error-message {
+  font-size: 14px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .flv-player-time-display {
+    display: none;
+  }
+
+  .flv-player-volume-control {
+    display: none;
+  }
+}
