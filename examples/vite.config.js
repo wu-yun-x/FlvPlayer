@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-05-28 16:09:27
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-05-29 18:15:32
+ * @LastEditTime: 2025-05-30 09:20:06
  * @Description: 配置示例页面
  */
 import { defineConfig } from 'vite';
@@ -20,25 +20,27 @@ export default defineConfig({
     server: {
         open: true,
         // 启用热更新
-        hmr: true
+        hmr: true,
+        // 新增调试配置
+        sourcemap: true,
+        debug: true
     },
     resolve: {
         alias: {
-            // 直接使用源码，而不是打包后的库
             '@': resolve(rootDir, 'src'),
-            // 将导入的库路径映射到源码
-            '../dist/flv-player.es.js': resolve(rootDir, 'src/index.js')
+            // 直接映射到源码目录
+            'flv-player': resolve(rootDir, 'src/index.js'),
         }
     },
     build: {
         outDir: resolve(rootDir, 'dist-examples'),
-        sourcemap: true,
-        minify: false
-    },
-    // 启用源码映射
-    css: {
-        devSourcemap: true
+        sourcemap: 'inline', // 生成内联sourcemap
+        minify: false,
+        // 新增调试构建配置
+        rollupOptions: {
+            treeshake: false // 关闭代码摇树优化
+        }
     },
     // 启用详细的日志
-    logLevel: 'info'
+    logLevel: 'debug',
 });

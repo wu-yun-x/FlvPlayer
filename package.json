@@ -9,11 +9,9 @@
     "dist"
   ],
   "scripts": {
-    "dev": "vite",
     "build": "vite build",
-    "serve-examples": "vite --config ./examples/vite.config.js",
-    "start": "node start-example.js",
-    "debug": "vite --config ./examples/vite.config.js --mode development --debug"
+    "dev": "vite serve examples --mode development",
+    "preview": "vite preview --port"
   },
   "keywords": [
     "flv",
@@ -26,7 +24,7 @@
   "author": "st004362",
   "license": "MIT",
   "dependencies": {
-    "mpegts.js": "^1.7.3"
+    "mpegts.js": "^1.8.0"
   },
   "devDependencies": {
     "vite": "^5.0.0"

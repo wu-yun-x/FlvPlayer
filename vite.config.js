@@ -2,7 +2,14 @@
  * @Author: st004362
  * @Date: 2025-05-28 15:56:05
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-05-29 18:38:43
+ * @LastEditTime: 2025-05-30 14:37:07
+ * @Description: 
+ */
+/*
+ * @Author: st004362
+ * @Date: 2025-05-28 15:56:05
+ * @LastEditors: ST/St004362
+ * @LastEditTime: 2025-05-30 11:53:03
  * @Description: vite配置文件
  */
 import { defineConfig } from 'vite';
@@ -35,5 +42,20 @@ export default defineConfig({
     // 启用源码映射
     css: {
         devSourcemap: true
+    },
+    test: {
+        environment: 'jsdom',       // 使用浏览器环境模拟
+        setupFiles: './test/setup.js', // 测试初始化文件
+        coverage: {
+            provider: 'istanbul',   // 使用行业标准覆盖率工具
+            include: ['src/ui/*.js'] // 仅统计UI组件覆盖率
+        }
+    },
+    server: {
+        port: 3000,
+        strictPort: true,
+        proxy: {
+            '/live': 'http://localhost:8000'
+        }
     }
 });

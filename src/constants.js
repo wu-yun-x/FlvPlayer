@@ -1,9 +1,9 @@
 /*
- * @Author: st004362
- * @Date: 2025-05-28 17:20:15
- * @LastEditors: ST/St004362
- * @LastEditTime: 2025-05-29 17:59:08
- * @Description: 定义播放器常量
+ * constants.js
+ * 播放器全局常量定义，包括事件、状态、适配器类型、播放模式等
+ *
+ * @author: st004362
+ * @date: 2025-05-31
  */
 
 /**
@@ -12,8 +12,6 @@
 export const PLAYER_STATES = {
     // 初始状态，播放器刚创建
     IDLE: 'idle',
-    // 初始化完成
-    INITIALIZED: 'initialized',
     // 正在加载资源
     LOADING: 'loading',
     // 资源已加载，准备就绪可以播放
@@ -26,70 +24,49 @@ export const PLAYER_STATES = {
     ENDED: 'ended',
     // 发生错误
     ERROR: 'error',
-    // 正在销毁
-    DESTROYING: 'destroying',
     // 已销毁
     DESTROYED: 'destroyed',
-    // 正在缓冲
-    BUFFERING: 'buffering'
+    // 缓冲中
+    BUFFERING: 'buffering',
+    // 已初始化
+    INITIALIZED: 'initialized',
+    // 正在销毁
+    DESTROYING: 'destroying'
+};
+
+// 新增常量
+export const PLAYER_ACTIONS = {
+    PLAY_TOGGLE: 'player/play_toggle',
+    VOLUME_CHANGE: 'player/volume_change',
+    SEEK: 'player/seek',
+    GET_DURATION: 'player/get_duration'
 };
 
 /**
  * 播放器事件常量
  */
 export const PLAYER_EVENTS = {
-    // 播放器初始化完成
-    INITIALIZED: 'initialized',
     // 播放器状态变化
-    STATE_CHANGE: 'stateChange',
-    // 开始加载资源
-    LOADING: 'loading',
-    // 资源加载完成，准备就绪
-    READY: 'ready',
+    STATE_CHANGE: 'state_change',
+    // 发生错误
+    ERROR: 'error',
+    // 时间更新
+    TIME_UPDATE: 'timeupdate',
+    // 进度更新
+    PROGRESS: 'progress',
     // 开始播放
     PLAY: 'play',
     // 暂停播放
     PAUSE: 'pause',
     // 播放结束
     ENDED: 'ended',
-    // 发生错误
-    ERROR: 'error',
-    // 时间更新
-    TIME_UPDATE: 'timeUpdate',
-    // 进度更新
-    PROGRESS: 'progress',
-    // 音量变化
-    VOLUME_CHANGE: 'volumeChange',
-    // 静音
-    MUTE: 'mute',
-    // 取消静音
-    UNMUTE: 'unmute',
-    // 开始跳转
-    SEEKING: 'seeking',
-    // 跳转完成
-    SEEKED: 'seeked',
-    // 正在缓冲
-    WAITING: 'waiting',
-    // 可以播放
-    CAN_PLAY: 'canPlay',
-    // 可以流畅播放
-    CAN_PLAY_THROUGH: 'canPlayThrough',
-    // 视频尺寸变化
-    RESIZE: 'resize',
-    // 全屏变化
-    FULLSCREEN_CHANGE: 'fullscreenChange',
-    // 画中画变化
-    PIP_CHANGE: 'pipChange',
-    // 播放速率变化
-    RATE_CHANGE: 'rateChange',
-    // 字幕变化
-    TEXT_TRACK_CHANGE: 'textTrackChange',
-    // 画质变化
-    QUALITY_CHANGE: 'qualityChange',
-    // 统计信息更新
-    STATS_UPDATE: 'statsUpdate',
     // 销毁
-    DESTROY: 'destroy'
+    DESTROY: 'destroy',
+    // 统计更新
+    STATS_UPDATE: 'stats_update',
+    // 已初始化
+    INITIALIZED: 'initialized',
+    MEDIA_INFO: 'media_info'
 };
 
 /**
@@ -147,10 +124,7 @@ export const LOG_LEVELS = {
  */
 export const ADAPTER_TYPES = {
     MPEGTS: 'mpegts',
-    FLVJS: 'flvjs',
-    HLSJS: 'hlsjs',
-    DASHJS: 'dashjs',
-    NATIVE: 'native'
+    // 未来可扩展: FLVJS: 'flvjs', HLSJS: 'hlsjs', NATIVE: 'native'
 };
 
 /**
@@ -178,42 +152,28 @@ export const CONNECTION_TYPES = {
 };
 
 /**
- * UI组件类型常量
+ * UI组件类型常量（可扩展）
  */
 export const UI_COMPONENT_TYPES = {
-    // 播放/暂停按钮
-    PLAY_PAUSE: 'playPause',
-    // 进度条
+    PLAY_PAUSE: 'play_pause',
     PROGRESS: 'progress',
-    // 时间显示
-    TIME_DISPLAY: 'timeDisplay',
-    // 音量控制
+    TIME_DISPLAY: 'time_display',
     VOLUME: 'volume',
-    // 全屏按钮
     FULLSCREEN: 'fullscreen',
-    // 画中画按钮
     PIP: 'pip',
-    // 设置按钮
     SETTINGS: 'settings',
-    // 缩略图
     THUMBNAIL: 'thumbnail'
 };
 
 /**
- * 统计信息类型常量
+ * 统计类型常量
  */
 export const STATS_TYPES = {
-    // 视频帧率
     FPS: 'fps',
-    // 丢帧率
     DROP_FRAME_RATE: 'dropFrameRate',
-    // 当前码率
     BITRATE: 'bitrate',
-    // 总加载时间
     TOTAL_LOAD_TIME: 'totalLoadTime',
-    // 首帧加载时间
     FIRST_FRAME_TIME: 'firstFrameTime',
-    // 缓冲区长度
     BUFFER_LENGTH: 'bufferLength'
 };
 
