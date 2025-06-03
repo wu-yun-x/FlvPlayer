@@ -19,32 +19,37 @@ import StateMachine from './StateMachine';
 class Player {
     /**
      * 构造函数，初始化播放器
-     * @param {Object} config - 播放器配置
+     * @param {Object} options - 播放器配置
      */
-    constructor(config) {
-        this.config = config; // 播放器配置
+    constructor(options) {
+        this.options = options; // 播放器配置
         this.stateMachine = new StateMachine(); // 状态机
         // 创建video元素
         this.video = document.createElement('video');
         this.video.className = 'flv-player-video';
-        this.video.controls = !!config.controls;
+        this.video.controls = !!options.controls;
         this.video.style.width = '100%';
         this.video.style.height = '100%';
-        if (config.muted) this.video.muted = true;
-        if (config.volume != null) this.video.volume = config.volume;
+        if (options.muted) this.video.muted = true;
+        if (options.volume != null) this.video.volume = options.volume;
         // 挂载到容器
-        if (typeof config.container === 'string') {
-            document.querySelector(config.container).appendChild(this.video);
-        } else if (config.container instanceof HTMLElement) {
-            config.container.appendChild(this.video);
+        if (typeof options.container === 'string') {
+            document.querySelector(options.container).appendChild(this.video);
+        } else if (options.container instanceof HTMLElement) {
+            options.container.appendChild(this.video);
+        } else {
+            throw new Error(
+                '[FlvPlayer] options.container 必须是一个 CSS 选择器字符串或 HTMLElement 实例，' +
+                `但实际得到的是：${Object.prototype.toString.call(options.container)}`
+            );
         }
         // 适配器类型（仅mpegts）
-        const type = config.adapter || ADAPTER_TYPES.MPEGTS;
-        this.adapter = AdapterFactory.create(type, this.video, config);
+        const type = options.adapter || ADAPTER_TYPES.MPEGTS;
+        this.adapter = AdapterFactory.create(type, this.video, options);
         // 绑定video事件
         this._bindVideoEvents();
         // 加载初始url
-        this.adapter.load(config.url);
+        this.adapter.load(options.mediaDataSource.url);
     }
 
     /**
@@ -115,6 +120,24 @@ class Player {
         if (this.adapter && typeof this.adapter.load === 'function') {
             this.adapter.load(url);
         }
+    }
+
+    /**
+     * 获取当前视频统计信息
+     * @returns {Object|null}
+     */
+    getStatisticsInfo() {
+        if (!this.video) return null;
+        const buffered = this.video.buffered;
+        return {
+            currentTime: this.video.currentTime,
+            duration: this.video.duration,
+            buffered: buffered.length ? buffered.end(buffered.length - 1) : 0,
+            volume: this.video.volume,
+            paused: this.video.paused,
+            readyState: this.video.readyState,
+            networkState: this.video.networkState
+        };
     }
 }
 

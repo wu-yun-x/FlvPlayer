@@ -17,14 +17,14 @@ const AdapterFactory = {
      * 创建适配器实例
      * @param {string} type - 适配器类型
      * @param {HTMLVideoElement} video - video元素
-     * @param {Object} config - 播放器配置
+     * @param {Object} options - 播放器配置
      * @returns {Object} 适配器实例
      */
-    create(type, video, config) {
+    create(type, video, options) {
         switch (type) {
             case ADAPTER_TYPES.MPEGTS:
             default:
-                return new MpegtsAdapter(video, config);
+                return new MpegtsAdapter(video, options);
         }
     }
 };

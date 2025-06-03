@@ -18,11 +18,12 @@ class MpegtsAdapter {
     /**
      * 构造函数
      * @param {HTMLVideoElement} video - video元素
-     * @param {Object} config - 播放器配置
+     * @param {Object} options - 播放器配置
      */
-    constructor(video, config) {
+    constructor(video, options) {
         this.video = video;
-        this.config = config;
+        this.config = options.mpegtsConfig;
+        this.mediaDataSource = options.mediaDataSource;
         this._init();
     }
 
@@ -32,12 +33,7 @@ class MpegtsAdapter {
      */
     _init() {
         if (mpegts.getFeatureList().mseLivePlayback) {
-            this.player = mpegts.createPlayer({
-                type: 'flv',
-                url: this.config.url,
-                isLive: !!this.config.isLive,
-                ...this.config.mpegtsConfig
-            });
+            this.player = mpegts.createPlayer(this.mediaDataSource, this.config);
             this.player.attachMediaElement(this.video);
             this.player.load();
             this._bindEvents();

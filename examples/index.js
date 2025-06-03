@@ -11,7 +11,6 @@ const playBtn = document.getElementById('playBtn');
 const pauseBtn = document.getElementById('pauseBtn');
 const destroyBtn = document.getElementById('destroyBtn');
 const volumeSlider = document.getElementById('volume');
-const mediaInfoEl = document.getElementById('mediaInfo');
 const statsInfoEl = document.getElementById('statsInfo');
 const eventLogEl = document.getElementById('eventLog');
 const statusIndicator = document.getElementById('statusIndicator');
@@ -81,26 +80,28 @@ function initPlayer() {
     const isLive = currentMode === 'live';
     const lowLatency = isLive && lowLatencyCheckbox.checked;
     const autoReconnect = isLive && autoReconnectCheckbox.checked;
+    const liveBufferLatencyChasing = isLive && seekToLiveCheckbox.checked
     const debug = debugCheckbox.checked;
     const maxRetries = parseInt(maxRetriesInput.value);
     const retryInterval = parseInt(retryIntervalInput.value);
     const autoplay = !isLive && autoplayCheckbox.checked;
     const showThumbnails = !isLive && showThumbnailsCheckbox.checked;
-    const liveBufferLatencyChasing = !isLive && seekToLiveCheckbox.checked
-    const bufferSize = !isLive ? parseFloat(bufferSizeInput.value) : 0.5;
+    const bufferSize = !isLive ? parseFloat(bufferSizeInput.value) : 1;
 
 
 
     updateStatus(PLAYER_STATES.LOADING);
-
     player = new Player({
-        url: url,
+        mediaDataSource: {
+            type: 'flv',
+            url: url,
+            isLive: isLive,
+            withCredentials: false
+        },
         container: '#player-container',
-        controls: false,
-        isLive: isLive,
+        controls: true,
         playMode: isLive ? PLAY_MODES.LIVE : PLAY_MODES.VOD,
-        // 自动追帧 - 仅直播模式
-        liveBufferLatencyChasing: liveBufferLatencyChasing,
+        // 自动追帧 
         autoplay: autoplay,
         debug: debug,
         lowLatency: lowLatency,
@@ -130,17 +131,25 @@ function initPlayer() {
         },
         // 根据模式设置不同的配置
         mpegtsConfig: isLive ? {
-            // 直播模式 - 低延迟优先
+            // // 直播模式 - 低延迟优先
             enableStashBuffer: false,
-            stashInitialSize: 32,
+            // stashInitialSize: 32,
             // 自动清理源缓冲区
             autoCleanupSourceBuffer: true,
-            // 自动清理最大后向时长
-            autoCleanupMaxBackwardDuration: 1,
-            // 自动清理最小后向时长
-            autoCleanupMinBackwardDuration: 0.5,
+            // // 自动清理最大后向时长
+            // autoCleanupMaxBackwardDuration: 1,
+            // // 自动清理最小后向时长
+            // autoCleanupMinBackwardDuration: 0.5,
             // 强制关键帧
-            forceKeyFrameOnDiscontinuity: true
+            forceKeyFrameOnDiscontinuity: true,
+            // 启用seek
+            seekType: 'range',
+            // 最大预加载时长
+            lazyLoadMaxDuration: 3 * 60,
+            // 启用worker
+            enableWorker: true,
+            // 自动追帧
+            liveBufferLatencyChasing: liveBufferLatencyChasing,
         } : {
             // 点播模式 - 流畅播放优先
             enableStashBuffer: true,
@@ -235,7 +244,6 @@ destroyBtn.addEventListener('click', () => {
     if (player) {
         player.destroy();
         player = null;
-        mediaInfoEl.textContent = '未加载';
         statsInfoEl.textContent = '未加载';
         latencyDisplay.textContent = '';
         updateStatus(null);
@@ -273,7 +281,6 @@ modeTabs.forEach(tab => {
         if (player) {
             player.destroy();
             player = null;
-            mediaInfoEl.textContent = '未加载';
             statsInfoEl.textContent = '未加载';
             latencyDisplay.textContent = '';
             updateStatus(null);
@@ -305,20 +312,3 @@ videoSources.forEach(source => {
         }
     });
 });
-
-// 添加调试按钮
-const debugBtn = document.createElement('button');
-debugBtn.className = 'btn';
-debugBtn.textContent = '打印调试信息';
-debugBtn.addEventListener('click', () => {
-    if (player) {
-        console.log('[DEBUG] 当前播放器实例:', player);
-        console.log('[DEBUG] UI组件:', player.ui ? player.ui.components : 'UI未初始化');
-        console.log('[DEBUG] 播放模式:', player.options.playMode);
-        console.log('[DEBUG] 是否为直播:', player.options.isLive);
-        console.log('[DEBUG] 视频元素:', player.videoElement);
-    } else {
-        console.log('[DEBUG] 播放器未初始化');
-    }
-});
-document.querySelector('.controls').appendChild(debugBtn);
