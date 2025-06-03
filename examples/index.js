@@ -3,9 +3,7 @@ import { Player, PlayerUI, PLAYER_STATES, PLAY_MODES, UI_COMPONENT_TYPES } from 
 
 let player = null;
 let ui = null;
-let latencyTimer = null;
 let currentMode = 'live';
-const container = document.getElementById('player-container');
 const liveUrlInput = document.getElementById('live-url');
 const vodUrlInput = document.getElementById('vod-url');
 const loadBtn = document.getElementById('loadBtn');
@@ -77,8 +75,6 @@ function initPlayer() {
     }
     if (player) {
         player.destroy();
-        clearInterval(latencyTimer);
-        latencyTimer = null;
     }
 
     const url = currentMode === 'live' ? liveUrlInput.value : vodUrlInput.value;
@@ -202,13 +198,6 @@ function initPlayer() {
         logEvent('状态变化', data);
         updateStatus(data.state);
     });
-
-    // 更新媒体信息
-    function updateMediaInfo() {
-        const mediaInfo = player.getMediaInfo();
-        mediaInfoEl.textContent = mediaInfo ? JSON.stringify(mediaInfo, null, 2) : '未获取到媒体信息';
-    }
-
     // 更新统计信息
     function updateStatsInfo() {
         const statsInfo = player.getStatisticsInfo();
@@ -250,8 +239,6 @@ destroyBtn.addEventListener('click', () => {
         statsInfoEl.textContent = '未加载';
         latencyDisplay.textContent = '';
         updateStatus(null);
-        clearInterval(latencyTimer);
-        latencyTimer = null;
         logEvent('播放器已销毁');
     }
 });
@@ -290,8 +277,6 @@ modeTabs.forEach(tab => {
             statsInfoEl.textContent = '未加载';
             latencyDisplay.textContent = '';
             updateStatus(null);
-            clearInterval(latencyTimer);
-            latencyTimer = null;
             logEvent('切换模式', { mode });
         }
     });
