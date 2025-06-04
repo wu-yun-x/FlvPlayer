@@ -24,6 +24,11 @@ class PlayerUI {
         this.video = player.videoElement; // video元素
         this.config = player.config; // 播放器配置
         this._init();
+
+        // 监听状态变更
+        this.player.on('state_change', (newState) => {
+            this._onPlayerStateChange(newState);
+        });
     }
 
     /**
@@ -208,6 +213,71 @@ class PlayerUI {
         const m = Math.floor(sec / 60).toString().padStart(2, '0');
         const s = (sec % 60).toString().padStart(2, '0');
         return `${m}:${s}`;
+    }
+
+    /**
+     * 根据状态更新UI
+     * @param {string} newState
+     * @private
+     */
+    _onPlayerStateChange(newState) {
+        switch (newState) {
+            case 'loading':
+                this._showLoading();
+                break;
+            case 'playing':
+                this._hideLoading();
+                this._hideError();
+                break;
+            case 'paused':
+                this._hideLoading();
+                this._hideError();
+                break;
+            case 'ended':
+                this._hideLoading();
+                this._hideError();
+                break;
+            case 'error':
+                this._showError();
+                break;
+            case 'destroyed':
+                this._hideLoading();
+                this._hideError();
+                break;
+            default:
+                this._hideLoading();
+                this._hideError();
+                break;
+        }
+    }
+
+    /**
+     * 展示loading动画
+     * @private
+     */
+    _showLoading() {
+        // 展示loading动画
+    }
+    /**
+     * 隐藏loading动画
+     * @private
+     */
+    _hideLoading() {
+        // 隐藏loading动画
+    }
+    /**
+     * 展示错误提示
+     * @private
+     */
+    _showError() {
+        // 展示错误提示
+    }
+    /**
+     * 隐藏错误提示
+     * @private
+     */
+    _hideError() {
+        // 隐藏错误提示
     }
 
     /**

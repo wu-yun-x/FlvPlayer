@@ -68,13 +68,20 @@ class Player {
      * 播放
      * @returns {Promise|undefined}
      */
-    play() { return this.adapter.play(); }
+    play() {
+        this.stateMachine.setState(PLAYER_STATES.PLAYING);
+        return this.adapter.play();
+    }
     /** 暂停 */
-    pause() { return this.adapter.pause(); }
+    pause() {
+        this.stateMachine.setState(PLAYER_STATES.PAUSED);
+        return this.adapter.pause();
+    }
     /**
      * 销毁播放器，移除video和adapter
      */
     destroy() {
+        this.stateMachine.setState(PLAYER_STATES.DESTROYING);
         this.adapter.destroy();
         if (this.video && this.video.parentNode) this.video.parentNode.removeChild(this.video);
         eventBus.emit(PLAYER_EVENTS.DESTROY);
@@ -93,7 +100,7 @@ class Player {
     off(event, handler) { eventBus.off(event, handler); }
     /**
      * 获取当前状态
-     * @returns {string}
+     * @returns {string}            
      */
     get state() { return this.stateMachine.getState(); }
     /**
@@ -117,6 +124,7 @@ class Player {
      * @param {string} url
      */
     load(url) {
+        this.stateMachine.setState(PLAYER_STATES.LOADING);
         if (this.adapter && typeof this.adapter.load === 'function') {
             this.adapter.load(url);
         }
