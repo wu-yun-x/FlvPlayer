@@ -1,10 +1,10 @@
 /*
- * PlayerUI.js
- * 点播（录播）播放器UI组件，结构化分区，黑底白字半透明风格
+ * @Author: st004362
+ * @Date: 2025-06-10 18:03:10
+ * @LastEditors: ST/St004362
+ * @LastEditTime: 2025-06-11 11:51:06
+ * @Description: 点播（录播）播放器UI组件，结构化分区，黑底白字半透明风格
  * 所有UI元素均有className，便于自定义样式和维护
- *
- * @author: st004362
- * @date: 2025-05-31
  */
 import { PLAYER_EVENTS } from '../constants';
 

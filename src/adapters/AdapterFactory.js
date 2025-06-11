@@ -1,9 +1,9 @@
 /*
- * AdapterFactory.js
- * 适配器工厂，按类型创建对应的协议适配器实例
- *
- * @author: st004362
- * @date: 2025-05-31
+ * @Author: st004362
+ * @Date: 2025-06-10 18:03:10
+ * @LastEditors: ST/St004362
+ * @LastEditTime: 2025-06-11 11:49:50
+ * @Description: 适配器工厂，按类型创建对应的协议适配器实例
  */
 import MpegtsAdapter from './MpegtsAdapter';
 import { ADAPTER_TYPES } from '../constants';

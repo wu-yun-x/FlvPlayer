@@ -2,10 +2,10 @@
  * @Author: st004362
  * @Date: 2025-05-30 17:32:31
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-04 10:17:21
+ * @LastEditTime: 2025-06-11 14:11:30
  * @Description: 状态机，负责管理播放器状态
  */
-import { PLAYER_STATES } from '../constants';
+import { PLAYER_STATES, PLAYER_EVENTS } from '../constants';
 import eventBus from '../events/EventBus';
 
 /**

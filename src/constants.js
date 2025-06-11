@@ -1,9 +1,9 @@
 /*
- * constants.js
- * 播放器全局常量定义，包括事件、状态、适配器类型、播放模式等
- *
- * @author: st004362
- * @date: 2025-05-31
+ * @Author: st004362
+ * @Date: 2025-06-10 18:03:10
+ * @LastEditors: ST/St004362
+ * @LastEditTime: 2025-06-11 13:51:52
+ * @Description: 播放器全局常量定义，包括事件、状态、适配器类型、播放模式等
  */
 
 /**
@@ -66,7 +66,10 @@ export const PLAYER_EVENTS = {
     STATS_UPDATE: 'stats_update',
     // 已初始化
     INITIALIZED: 'initialized',
-    MEDIA_INFO: 'media_info'
+    // 媒体信息
+    MEDIA_INFO: 'media_info',
+    // 重连请求
+    RECONNECT_NEEDED: 'reconnect_needed'
 };
 
 /**
@@ -205,15 +208,8 @@ export const DEFAULT_CONFIG = {
     bufferSize: 0.5,
     // 低延迟模式
     lowLatency: true,
-    // UI配置
-    ui: {
-        enabled: true,
-        components: [
-            UI_COMPONENT_TYPES.PLAY_PAUSE,
-            UI_COMPONENT_TYPES.PROGRESS,
-            UI_COMPONENT_TYPES.TIME_DISPLAY,
-            UI_COMPONENT_TYPES.VOLUME,
-            UI_COMPONENT_TYPES.FULLSCREEN
-        ]
-    }
+    // WebSocket连接建立超时时间
+    connectionTimeout: 5000,
+    // 首个媒体数据包接收超时时间
+    dataTimeout: 5000,
 };

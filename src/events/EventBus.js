@@ -1,9 +1,9 @@
 /*
- * EventBus.js
- * 简易事件总线，负责全局事件的订阅、分发和解绑
- *
- * @author: st004362
- * @date: 2025-05-31
+ * @Author: st004362
+ * @Date: 2025-06-10 18:03:10
+ * @LastEditors: ST/St004362
+ * @LastEditTime: 2025-06-11 11:50:54
+ * @Description: 简易事件总线，负责全局事件的订阅、分发和解绑
  */
 class EventBus {
     constructor() {

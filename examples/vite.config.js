@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-05-28 16:09:27
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-05-30 09:20:06
+ * @LastEditTime: 2025-06-11 14:52:17
  * @Description: 配置示例页面
  */
 import { defineConfig } from 'vite';

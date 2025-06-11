@@ -110,6 +110,10 @@ function initPlayer() {
         retryInterval: retryInterval,
         // 缓冲区大小
         bufferSize: bufferSize,
+        // 连接超时时间
+        connectionTimeout: 3000,
+        // 首个媒体数据包接收超时时间
+        dataTimeout: 3000,
         // UI配置
         ui: {
             enabled: true,
