@@ -138,33 +138,45 @@ function initPlayer() {
         },
         // 根据模式设置不同的配置
         mpegtsConfig: isLive ? {
-            // // 直播模式 - 低延迟优先
+            // 直播模式 - 低延迟优先
             enableStashBuffer: false,
-            // stashInitialSize: 32,
-            // 自动清理源缓冲区
+            // 初始缓冲区大小
+            stashInitialSize: 128,
+            // 启用自动清理源缓冲区
             autoCleanupSourceBuffer: true,
-            // // 自动清理最大后向时长
-            // autoCleanupMaxBackwardDuration: 1,
-            // // 自动清理最小后向时长
-            // autoCleanupMinBackwardDuration: 0.5,
-            // 强制关键帧
-            forceKeyFrameOnDiscontinuity: true,
-            // 启用seek
-            seekType: 'range',
+            // 设置较小的向后缓冲时长
+            autoCleanupMaxBackwardDuration: 3 * 60,
+            // 设置较小的预加载时长
+            autoCleanupMinBackwardDuration: 3 * 60,
             // 最大预加载时长
             lazyLoadMaxDuration: 3 * 60,
-            // 启用worker
-            enableWorker: true,
+            // 启用实时延迟追赶
+            forceKeyFrameOnDiscontinuity: true,
+            // 最大可接受的缓冲延迟(秒)
+            liveBufferLatencyMaxLatency: 1.5,
+            // 最小需保持的缓冲延迟(秒)
+            liveBufferLatencyMinRemain: 0.5,
             // 自动追帧
             liveBufferLatencyChasing: liveBufferLatencyChasing,
+            // 启用seek
+            seekType: 'range',
+            // 启用worker
+            enableWorker: true,
         } : {
             // 点播模式 - 流畅播放优先
+            // 启用缓冲区
             enableStashBuffer: true,
+            // 初始缓冲区大小
             stashInitialSize: 128,
-            autoCleanupSourceBuffer: true,
+            // 启用自动清理源缓冲区
+            autoCleanupSourceBuffer: false,
+            // 设置较小的向后缓冲时长
             autoCleanupMaxBackwardDuration: 30,
+            // 设置较小的预加载时长
             autoCleanupMinBackwardDuration: 10,
-            lazyLoadMaxDuration: 60,
+            // 最大预加载时长
+            lazyLoadMaxDuration: 3 * 60,
+            // 预加载恢复时长
             lazyLoadRecoverDuration: 30
         }
     });

@@ -102,11 +102,9 @@ class MpegtsAdapter {
             if (info && typeof info.totalBytes === 'number') {
                 if (!this._isConnected) {
                     this._isConnected = true;
-                    this._clearConnectionTimeoutTimer();
                     console.log(`[MpegtsAdapter] WebSocket连接建立，耗时: ${Date.now() - this._connectionStartTime}ms`);
                 } else if (!this._hasReceivedData && info.totalBytes > 0) {
                     this._hasReceivedData = true;
-                    this._clearDataTimeoutTimer();
                     this._currentRetry = 0; // 重置重试计数
                     console.log(`[MpegtsAdapter] 收到首个媒体数据，总耗时: ${Date.now() - this._connectionStartTime}ms`);
                 }
@@ -124,7 +122,6 @@ class MpegtsAdapter {
         this.player.on(mpegts.Events.MEDIA_INFO, (info) => {
             if (!this._hasReceivedData) {
                 this._hasReceivedData = true;
-                this._clearConnectionTimeoutTimer();
                 console.log(`[MpegtsAdapter] 通过MEDIA_INFO确认接收到数据`);
             }
             eventBus.emit(PLAYER_EVENTS.MEDIA_INFO, info);
