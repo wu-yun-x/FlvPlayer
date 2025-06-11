@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-06-10 18:03:10
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-11 14:10:05
+ * @LastEditTime: 2025-06-11 17:11:23
  * @Description: 播放器核心类，负责视频元素管理、协议适配、生命周期和事件分发
  */
 import AdapterFactory from '../adapters/AdapterFactory';
@@ -48,8 +48,6 @@ class Player {
         this.adapter = AdapterFactory.create(type, this.video, options);
         // 绑定video事件
         this._bindVideoEvents();
-        // 监听重连事件
-        eventBus.on(PLAYER_EVENTS.RECONNECT_NEEDED, this._handleReconnect.bind(this));
         // 加载初始url
         this.adapter.load(options.mediaDataSource.url);
     }
@@ -64,20 +62,6 @@ class Player {
         this.video.addEventListener('ended', () => eventBus.emit(PLAYER_EVENTS.ENDED));
         this.video.addEventListener('timeupdate', () => eventBus.emit(PLAYER_EVENTS.TIME_UPDATE, this.video.currentTime));
         this.video.addEventListener('progress', () => eventBus.emit(PLAYER_EVENTS.PROGRESS));
-    }
-
-    /**
-     * 处理重连
-     * @private
-     */
-    _handleReconnect() {
-        console.log('[Player] 尝试重新连接...');
-        // 简单的重连逻辑：重新加载当前URL
-        if (this.options.mediaDataSource && this.options.mediaDataSource.url) {
-            setTimeout(() => {
-                this.load(this.options.mediaDataSource.url);
-            }, 1000); // 延迟1秒后重连
-        }
     }
 
     /**
@@ -100,8 +84,6 @@ class Player {
         this.stateMachine.setState(PLAYER_STATES.DESTROYING);
         this.adapter.destroy();
         if (this.video && this.video.parentNode) this.video.parentNode.removeChild(this.video);
-        // 解绑重连事件
-        eventBus.off(PLAYER_EVENTS.RECONNECT_NEEDED, this._handleReconnect.bind(this));
         eventBus.emit(PLAYER_EVENTS.DESTROY);
     }
     /**

@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-06-10 18:03:10
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-11 15:51:45
+ * @LastEditTime: 2025-06-11 17:08:57
  * @Description: mpegts.js 协议适配器，负责与 mpegts.js 实例交互，提供统一的播放器适配接口
  */
 import mpegts from 'mpegts.js';
@@ -28,16 +28,17 @@ class MpegtsAdapter {
         this.connectionTimeout = options.connectionTimeout
         // 接收数据超时时间
         this.dataTimeout = options.dataTimeout;
-        // 记录连接开始时间
+        // 重连相关配置
+        this.maxErrorRetries = options.maxErrorRetries;
+        this.retryInterval = options.retryInterval;
+        this.maxRetryInterval = options.maxRetryInterval;
+        // 重连状态
+        this._currentRetry = 0;
+        this._retryTimer = null;
         this._connectionStartTime = null;
-        // 设置连接状态
         this._isConnected = false;
-        // 设置是否接收到了数据
         this._hasReceivedData = false;
-        // 设置连接超时计时器
-        this._connectionTimeoutTimer = null;
-        // 设置数据接收超时计时器
-        this._dataTimeoutTimer = null;
+
         this._init();
     }
 
@@ -46,83 +47,90 @@ class MpegtsAdapter {
      * @private
      */
     _init() {
+        this._clearAllTimers();
         if (mpegts.getFeatureList().mseLivePlayback) {
-            this.player = mpegts.createPlayer(this.mediaDataSource, this.config)
-            // 先绑定事件，再进行连接
-            this._bindEvents();
-
-            // 记录开始时间和设置超时计时器
-            this._connectionStartTime = Date.now();
-            this._connectionTimeoutTimer = setTimeout(() => {
-                if (!this._isConnected) {
-                    this._handleTimeout('WebSocket connection timeout');
-                }
-            }, this.connectionTimeout);
-
-            // 最后才开始连接和加载
-            this.player.attachMediaElement(this.video)
-            this.player.load()
+            this._createPlayer();
         }
     }
 
+
     /**
-     * 绑定 mpegts.js 事件到全局 eventBus
+     * 创建 mpegts.js 实例
      * @private
      */
+    _createPlayer() {
+        this._connectionStartTime = Date.now();
+
+        // 创建播放器实例
+        this.player = mpegts.createPlayer(this.mediaDataSource, this.config);
+        this._bindEvents();
+        this.player.attachMediaElement(this.video);
+
+        // 设置连接超时计时器（仅用于数据接收超时检测）
+        this._connectionTimeoutTimer = setTimeout(() => {
+            if (!this._hasReceivedData) {
+                this._handleTimeout('No media data received timeout');
+            }
+        }, this.connectionTimeout);
+
+        this.player.load();
+    }
+
+    /**
+   * 绑定 mpegts.js 事件到全局 eventBus
+   * @private
+   */
     _bindEvents() {
-        // 连接建立事件（通过STATISTICS_INFO判断）
-        this.player.on(mpegts.Events.STATISTICS_INFO, (info) => {
-            // 只有在首次收到统计信息且的确有数据时，才认为连接成功
-            if (!this._isConnected && info && typeof info.totalBytes === 'number') {
-                this._isConnected = true;
-                this._clearConnectionTimeoutTimer();
-                console.log(`[MpegtsAdapter] WebSocket连接建立，耗时: ${Date.now() - this._connectionStartTime}ms`);
+        // 错误事件处理（包括连接失败）
+        this.player.on(mpegts.Events.ERROR, (error) => {
+            console.error('[MpegtsAdapter] 播放器错误:', error);
+            this._clearAllTimers();
 
-                // 设置数据接收超时计时器
-                this._dataTimeoutTimer = setTimeout(() => {
-                    if (!this._hasReceivedData) {
-                        this._handleTimeout('No media data received timeout');
-                    }
-                }, this.dataTimeout);
+            // 检查是否需要重试
+            if (this._currentRetry < this.maxErrorRetries) {
+                this._scheduleRetry();
+            } else {
+                console.warn('[MpegtsAdapter] 达到最大重试次数，停止重连');
+                eventBus.emit(PLAYER_EVENTS.RECONNECT_FAILED);
+                this.destroy();
             }
-
-            // 检查是否收到媒体数据
-            if (!this._hasReceivedData && info.totalBytes > 0) {
-                this._hasReceivedData = true;
-                this._clearDataTimeoutTimer();
-                console.log(`[MpegtsAdapter] 收到首个媒体数据，总耗时: ${Date.now() - this._connectionStartTime}ms`);
-            }
-
-            // 发送统计信息到事件总线
-            eventBus.emit(PLAYER_EVENTS.STATS_UPDATE, {
-                statisticsInfo: info,
-                isConnected: this._isConnected,
-                hasReceivedData: this._hasReceivedData,
-                connectionTime: Date.now() - this._connectionStartTime
-            });
+            eventBus.emit(PLAYER_EVENTS.ERROR, error);
         });
 
-        // 媒体信息事件（作为备用连接检测）
-        this.player.on(mpegts.Events.MEDIA_INFO, (info) => {
-            if (!this._isConnected) {
-                this._isConnected = true;
-                this._clearConnectionTimeoutTimer();
-            } else if (!this.hasReceivedData) {
-                this._hasReceivedData = true;
-                this._clearDataTimeoutTimer();
-                console.log(`[MpegtsAdapter] 通过MEDIA_INFO确认接收到数据，总耗时: ${Date.now() - this._connectionStartTime}ms`);
+        // 统计信息事件（用于检测数据接收）
+        this.player.on(mpegts.Events.STATISTICS_INFO, (info) => {
+            if (info && typeof info.totalBytes === 'number') {
+                if (!this._isConnected) {
+                    this._isConnected = true;
+                    this._clearConnectionTimeoutTimer();
+                    console.log(`[MpegtsAdapter] WebSocket连接建立，耗时: ${Date.now() - this._connectionStartTime}ms`);
+                } else if (!this._hasReceivedData && info.totalBytes > 0) {
+                    this._hasReceivedData = true;
+                    this._clearDataTimeoutTimer();
+                    this._currentRetry = 0; // 重置重试计数
+                    console.log(`[MpegtsAdapter] 收到首个媒体数据，总耗时: ${Date.now() - this._connectionStartTime}ms`);
+                }
+
+                eventBus.emit(PLAYER_EVENTS.STATS_UPDATE, {
+                    statisticsInfo: info,
+                    isConnected: this._isConnected,
+                    hasReceivedData: this._hasReceivedData,
+                    connectionTime: Date.now() - this._connectionStartTime
+                });
             }
-            // 发送媒体信息到事件总线
+        });
+
+        // 媒体信息事件
+        this.player.on(mpegts.Events.MEDIA_INFO, (info) => {
+            if (!this._hasReceivedData) {
+                this._hasReceivedData = true;
+                this._clearConnectionTimeoutTimer();
+                console.log(`[MpegtsAdapter] 通过MEDIA_INFO确认接收到数据`);
+            }
             eventBus.emit(PLAYER_EVENTS.MEDIA_INFO, info);
         });
-
-        // 添加错误事件监听
-        this.player.on(mpegts.Events.ERROR, (e) => {
-            this._clearAllTimers();
-            // 触发错误事件
-            eventBus.emit(PLAYER_EVENTS.ERROR, e);
-        });
     }
+
 
     /**
      * 处理超时事件
@@ -135,33 +143,53 @@ class MpegtsAdapter {
                 type: ERROR_TYPES.TIMEOUT,
                 details: reason,
                 isConnected: this._isConnected,
-                hasReceivedData: this._hasReceivedData
+                hasReceivedData: this._hasReceivedData,
+                retryCount: this._currentRetry,
+                maxErrorRetries: this.maxErrorRetries
             });
-            this.destroy();
-            eventBus.emit(PLAYER_EVENTS.RECONNECT_NEEDED);
+
+            // 是否可以进行重试
+            if (this._currentRetry < this.maxErrorRetries) {
+                this._scheduleRetry();
+            } else {
+                console.warn('[MpegtsAdapter] 达到最大重试次数，停止重连');
+                eventBus.emit(PLAYER_EVENTS.RECONNECT_FAILED);
+                this.destroy();
+            }
         }
     }
 
     /**
-     * 清除连接超时计时器
-     * @private
+     * 计算指数退避延迟时间
      */
-    _clearConnectionTimeoutTimer() {
-        if (this._connectionTimeoutTimer) {
-            clearTimeout(this._connectionTimeoutTimer);
-            this._connectionTimeoutTimer = null;
-        }
+    _getRetryDelay() {
+        // 使用指数退避算法：baseDelay * (2 ^ retryCount)
+        const delay = this.retryInterval * Math.pow(2, this._currentRetry);
+        // 添加一些随机性，避免多个客户端同时重连
+        const jitter = Math.random() * 1000
+        // 确保不超过最大延迟时间
+        return Math.floor(Math.min(delay + jitter, this.maxRetryInterval));
     }
 
     /**
-     * 清除数据接收超时计时器
-     * @private
+     * 计划重连
      */
-    _clearDataTimeoutTimer() {
-        if (this._dataTimeoutTimer) {
-            clearTimeout(this._dataTimeoutTimer);
-            this._dataTimeoutTimer = null;
-        }
+    _scheduleRetry() {
+        const delay = this._getRetryDelay();
+        console.log(`[MpegtsAdapter] 计划第 ${this._currentRetry + 1}/${this.maxErrorRetries} 次重连，延迟: ${delay}ms`);
+
+        eventBus.emit(PLAYER_EVENTS.RECONNECTING, {
+            attempt: this._currentRetry + 1,
+            maxErrorRetries: this.maxErrorRetries,
+            delay: delay
+        });
+
+        this._retryTimer = setTimeout(() => {
+            this._currentRetry++;
+            this._isConnected = false;
+            this._hasReceivedData = false;
+            this._createPlayer();
+        }, delay);
     }
 
     /**
@@ -169,10 +197,19 @@ class MpegtsAdapter {
      * @private
      */
     _clearAllTimers() {
-        this._clearConnectionTimeoutTimer();
-        this._clearDataTimeoutTimer();
+        if (this._connectionTimeoutTimer) {
+            clearTimeout(this._connectionTimeoutTimer)
+            this._connectionTimeoutTimer = null;
+        }
+        if (this._dataTimeoutTimer) {
+            clearTimeout(this._dataTimeoutTimer);
+            this._dataTimeoutTimer = null;
+        }
+        if (this._retryTimer) {
+            clearTimeout(this._retryTimer);
+            this._retryTimer = null;
+        }
     }
-
 
     /**
      * 加载新的视频源

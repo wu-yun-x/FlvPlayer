@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-06-10 18:03:10
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-11 13:51:52
+ * @LastEditTime: 2025-06-11 16:53:35
  * @Description: 播放器全局常量定义，包括事件、状态、适配器类型、播放模式等
  */
 
@@ -68,8 +68,8 @@ export const PLAYER_EVENTS = {
     INITIALIZED: 'initialized',
     // 媒体信息
     MEDIA_INFO: 'media_info',
-    // 重连请求
-    RECONNECT_NEEDED: 'reconnect_needed'
+    RECONNECTING: 'reconnecting',      // 正在重连
+    RECONNECT_FAILED: 'reconnectFailed', // 重连失败
 };
 
 /**
@@ -196,8 +196,10 @@ export const DEFAULT_CONFIG = {
     volume: 1.0,
     // 最大错误重试次数
     maxErrorRetries: 3,
-    // 重试间隔(毫秒)
+    // 基础重试间隔(毫秒)
     retryInterval: 3000,
+    // 最大重试间隔(毫秒)
+    maxRetryInterval: 5000,
     // 调试模式
     debug: false,
     // 默认适配器

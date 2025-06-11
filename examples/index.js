@@ -30,6 +30,7 @@ const autoReconnectCheckbox = document.getElementById('autoReconnect');
 const debugCheckbox = document.getElementById('debug');
 const maxRetriesInput = document.getElementById('maxRetries');
 const retryIntervalInput = document.getElementById('retryInterval');
+const maxRetryIntervalInput = document.getElementById('maxRetryInterval');
 const autoplayCheckbox = document.getElementById('autoplay');
 const showThumbnailsCheckbox = document.getElementById('showThumbnails');
 const bufferSizeInput = document.getElementById('bufferSize');
@@ -84,6 +85,7 @@ function initPlayer() {
     const debug = debugCheckbox.checked;
     const maxRetries = parseInt(maxRetriesInput.value);
     const retryInterval = parseInt(retryIntervalInput.value);
+    const maxRetryInterval = parseInt(maxRetryIntervalInput.value);
     const autoplay = !isLive && autoplayCheckbox.checked;
     const showThumbnails = !isLive && showThumbnailsCheckbox.checked;
     const bufferSize = !isLive ? parseFloat(bufferSizeInput.value) : 1;
@@ -108,6 +110,7 @@ function initPlayer() {
         autoReconnect: autoReconnect,
         maxErrorRetries: maxRetries,
         retryInterval: retryInterval,
+        maxRetryInterval: maxRetryInterval,
         // 缓冲区大小
         bufferSize: bufferSize,
         // 连接超时时间
