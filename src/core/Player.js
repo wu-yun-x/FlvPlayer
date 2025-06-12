@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-06-10 18:03:10
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-11 17:11:23
+ * @LastEditTime: 2025-06-12 14:32:37
  * @Description: 播放器核心类，负责视频元素管理、协议适配、生命周期和事件分发
  */
 import AdapterFactory from '../adapters/AdapterFactory';
@@ -50,6 +50,8 @@ class Player {
         this._bindVideoEvents();
         // 加载初始url
         this.adapter.load(options.mediaDataSource.url);
+        // 绑定网络质量变化事件
+        eventBus.on(PLAYER_EVENTS.NETWORK_QUALITY_CHANGE, this._onNetworkQualityChange.bind(this));
     }
 
     /**
@@ -62,6 +64,12 @@ class Player {
         this.video.addEventListener('ended', () => eventBus.emit(PLAYER_EVENTS.ENDED));
         this.video.addEventListener('timeupdate', () => eventBus.emit(PLAYER_EVENTS.TIME_UPDATE, this.video.currentTime));
         this.video.addEventListener('progress', () => eventBus.emit(PLAYER_EVENTS.PROGRESS));
+        this.video.addEventListener('canplay', () => {
+            if (this.stateMachine.getState() !== PLAYER_STATES.PLAYING) {
+                this.stateMachine.setState(PLAYER_STATES.READY);
+                eventBus.emit(PLAYER_EVENTS.READY);
+            }
+        });
     }
 
     /**
@@ -76,15 +84,6 @@ class Player {
     pause() {
         this.stateMachine.setState(PLAYER_STATES.PAUSED);
         return this.adapter.pause();
-    }
-    /**
-     * 销毁播放器，移除video和adapter
-     */
-    destroy() {
-        this.stateMachine.setState(PLAYER_STATES.DESTROYING);
-        this.adapter.destroy();
-        if (this.video && this.video.parentNode) this.video.parentNode.removeChild(this.video);
-        eventBus.emit(PLAYER_EVENTS.DESTROY);
     }
     /**
      * 事件监听
@@ -146,6 +145,63 @@ class Player {
             readyState: this.video.readyState,
             networkState: this.video.networkState
         };
+    }
+    /**
+     * 网络质量变化事件
+     * @param {Object} quality 网络质量信息
+     */
+    // 网络质量变化处理
+    _onNetworkQualityChange(data) {
+        console.log(data, '网络质量变化处理')
+        // 更新状态
+        this.networkQuality = data.quality;
+
+        // 记录日志
+        console.log(`[Player] 网络质量变化: ${data.quality}, 比特率: ${Math.round(data.bitrate / 1000)}kbps`);
+
+        // 触发UI更新
+        eventBus.emit(PLAYER_EVENTS.UI_UPDATE, {
+            type: 'networkQuality',
+            data: {
+                quality: data.quality,
+                bitrate: Math.round(data.bitrate / 1000) + ' kbps',
+                bufferHealth: Math.round(data.bufferHealth * 100) + '%'
+            }
+        });
+
+        console.log(`[Player] 网络质量变化: ${data.quality}, 比特率: ${Math.round(data.bitrate / 1000)}kbps`);
+    }
+    /**
+     * 获取硬件加速信息
+     * @returns {Object|null} 硬件加速信息
+     */
+    getHardwareAccelerationInfo() {
+        if (this.adapter && typeof this.adapter.getHardwareAccelerationInfo === 'function') {
+            return this.adapter.getHardwareAccelerationInfo();
+        }
+        return null;
+    }
+    /**
+     * 设置硬件加速状态
+     * @param {Object} options - 配置选项
+     * @param {boolean} options.enabled - 是否启用硬件加速
+     * @param {boolean} options.allowSoftwareRendering - 是否允许软件渲染
+     * @returns {Object|null} 硬件加速信息
+     */
+    setHardwareAcceleration(options = {}) {
+        if (this.adapter && typeof this.adapter.setHardwareAcceleration === 'function') {
+            return this.adapter.setHardwareAcceleration(options);
+        }
+        return null;
+    }
+    /** 销毁播放器，移除video和adapter */
+    destroy() {
+        // 解绑网络质量事件
+        eventBus.off(PLAYER_EVENTS.NETWORK_QUALITY_CHANGE, this._onNetworkQualityChange);
+        this.stateMachine.setState(PLAYER_STATES.DESTROYING);
+        this.adapter.destroy();
+        if (this.video && this.video.parentNode) this.video.parentNode.removeChild(this.video);
+        eventBus.emit(PLAYER_EVENTS.DESTROY);
     }
 }
 

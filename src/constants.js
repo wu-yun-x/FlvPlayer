@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-06-10 18:03:10
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-11 16:53:35
+ * @LastEditTime: 2025-06-12 11:24:17
  * @Description: 播放器全局常量定义，包括事件、状态、适配器类型、播放模式等
  */
 
@@ -68,8 +68,19 @@ export const PLAYER_EVENTS = {
     INITIALIZED: 'initialized',
     // 媒体信息
     MEDIA_INFO: 'media_info',
-    RECONNECTING: 'reconnecting',      // 正在重连
-    RECONNECT_FAILED: 'reconnectFailed', // 重连失败
+    // 正在重连
+    RECONNECTING: 'reconnecting',
+    // 重连失败
+    RECONNECT_FAILED: 'reconnectFailed',
+    // 网络质量变化事件
+    NETWORK_QUALITY_CHANGE: 'network_quality_change',
+    // UI更新事件
+    UI_UPDATE: 'ui_update',
+    // 硬件加速信息
+    HW_ACCEL_INFO: 'hw_accel_info',
+    // 硬件加速设置变更事件
+    HW_ACCEL_CHANGED: 'hw_accel_changed'
+
 };
 
 /**
@@ -215,3 +226,54 @@ export const DEFAULT_CONFIG = {
     // 首个媒体数据包接收超时时间
     dataTimeout: 5000,
 };
+
+/**
+ * 网络质量配置常量
+ */
+export const NETWORK_QUALITY = {
+    EXCELLENT: 'excellent',
+    NORMAL: 'normal',
+    POOR: 'poor'
+};
+
+/**
+ * 网络质量对应的缓冲区配置
+ */
+
+export const BUFFER_CONFIGS = {
+    // 优质网络
+    excellent: {
+        enableStashBuffer: false,
+        stashInitialSize: 64,
+        autoCleanupSourceBuffer: true,
+        autoCleanupMaxBackwardDuration: 0.5,
+        lazyLoadMaxDuration: 0.3,
+        liveBufferLatencyChasing: true,
+        liveBufferLatencyMaxLatency: 0.5,
+        liveBufferLatencyMinRemain: 0.1
+    },
+    // 一般网络
+    normal: {
+        enableStashBuffer: false,
+        stashInitialSize: 128,
+        autoCleanupSourceBuffer: true,
+        autoCleanupMaxBackwardDuration: 1,
+        lazyLoadMaxDuration: 0.5,
+        liveBufferLatencyChasing: true,
+        liveBufferLatencyMaxLatency: 1,
+        liveBufferLatencyMinRemain: 0.2
+    },
+    // 较差网络
+    poor: {
+        enableStashBuffer: false,
+        stashInitialSize: 256,
+        autoCleanupSourceBuffer: true,
+        autoCleanupMaxBackwardDuration: 2,
+        lazyLoadMaxDuration: 1,
+        liveBufferLatencyChasing: true,
+        liveBufferLatencyMaxLatency: 2,
+        liveBufferLatencyMinRemain: 0.5
+    }
+}
+
+
