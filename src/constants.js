@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-06-10 18:03:10
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-12 11:24:17
+ * @LastEditTime: 2025-06-13 10:33:27
  * @Description: 播放器全局常量定义，包括事件、状态、适配器类型、播放模式等
  */
 
@@ -42,6 +42,14 @@ export const PLAYER_ACTIONS = {
     GET_DURATION: 'player/get_duration'
 };
 
+
+// 延迟监控阈值配置
+export const LATENCY_THRESHOLDS = {
+    WARNING: 2,              // 延迟警告阈值（秒）
+    CRITICAL: 5,             // 延迟严重阈值（秒）
+    EMERGENCY: 10            // 延迟紧急阈值（秒）
+}
+
 /**
  * 播放器事件常量
  */
@@ -79,8 +87,12 @@ export const PLAYER_EVENTS = {
     // 硬件加速信息
     HW_ACCEL_INFO: 'hw_accel_info',
     // 硬件加速设置变更事件
-    HW_ACCEL_CHANGED: 'hw_accel_changed'
-
+    HW_ACCEL_CHANGED: 'hw_accel_changed',
+    // 延迟相关事件
+    LATENCY_WARNING: 'latency_warning',       // 延迟警告
+    LATENCY_CRITICAL: 'latency_critical',     // 延迟严重
+    LATENCY_EMERGENCY: 'latency_emergency',   // 延迟紧急
+    LATENCY_NORMAL: 'latency_normal',         // 延迟恢复正常
 };
 
 /**

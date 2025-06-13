@@ -2,13 +2,13 @@
  * @Author: st004362
  * @Date: 2025-06-10 18:03:10
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-12 17:33:43
+ * @LastEditTime: 2025-06-13 10:41:39
  * @Description: mpegts.js 协议适配器，负责与 mpegts.js 实例交互，提供统一的播放器适配接口
  */
 import mpegts from 'mpegts.js';
 import eventBus from '../events/EventBus';
 import { detectAndEnableHardwareAcceleration } from '../utils/HardwareAcceleration';
-import { PLAYER_EVENTS, ERROR_TYPES, NETWORK_QUALITY, BUFFER_CONFIGS } from '../constants';
+import { PLAYER_EVENTS, ERROR_TYPES, NETWORK_QUALITY, BUFFER_CONFIGS, LATENCY_THRESHOLDS } from '../constants';
 
 
 /**
@@ -56,6 +56,17 @@ class MpegtsAdapter {
         // 数据接收历史记录
         this._dataReceiveHistory = [];
 
+        // 延迟监控相关
+        this._latencyMonitorEnabled = options.latencyMonitorEnabled !== false;
+        this._latencyThresholds = {
+            warning: options.latencyWarningThreshold || LATENCY_THRESHOLDS.WARNING,
+            critical: options.latencyCriticalThreshold || LATENCY_THRESHOLDS.CRITICAL,
+            emergency: options.latencyEmergencyThreshold || LATENCY_THRESHOLDS.EMERGENCY
+        };
+        this._currentLatencyLevel = 'normal';
+        this._latencyCheckInterval = options.latencyCheckInterval || 1000; // 1秒检查一次
+        this._latencyCheckTimer = null;
+
 
         this._init();
     }
@@ -75,6 +86,11 @@ class MpegtsAdapter {
         }
         // 启动网络质量监控
         this._startQualityMonitoring();
+
+        // 启动延迟监控
+        if (this._latencyMonitorEnabled) {
+            this._startLatencyMonitoring();
+        }
     }
 
 
@@ -100,10 +116,142 @@ class MpegtsAdapter {
         this.player.load();
     }
 
+
     /**
-   * 绑定 mpegts.js 事件到全局 eventBus
-   * @private
-   */
+     * 启动延迟监控
+     */
+    _startLatencyMonitoring() {
+        // 清除现有定时器
+        if (this._latencyCheckTimer) {
+            clearInterval(this._latencyCheckTimer);
+        }
+
+        // 设置新的检查间隔
+        this._latencyCheckTimer = setInterval(() => {
+            this._checkLatency();
+        }, this._latencyCheckInterval);
+
+    }
+
+    /**
+     * 检查延迟状态
+     */
+    _checkLatency() {
+        if (!this.player || !this._isConnected || !this.video) return;
+
+        // 计算当前延迟
+        const currentLatency = this._calculateCurrentLatency();
+        // 根据延迟判断级别
+        let latencyLevel = 'normal';
+
+        if (currentLatency >= this._latencyThresholds.emergency) {
+            latencyLevel = 'emergency';
+        } else if (currentLatency >= this._latencyThresholds.critical) {
+            latencyLevel = 'critical';
+        } else if (currentLatency >= this._latencyThresholds.warning) {
+            latencyLevel = 'warning';
+        }
+
+        // 如果延迟级别发生变化，发送事件
+        if (latencyLevel !== this._currentLatencyLevel) {
+            this._currentLatencyLevel = latencyLevel;
+            // 触发对应事件
+            switch (latencyLevel) {
+                case 'warning':
+                    eventBus.emit(PLAYER_EVENTS.LATENCY_WARNING, { latency: currentLatency });
+                    break;
+                case 'critical':
+                    eventBus.emit(PLAYER_EVENTS.LATENCY_CRITICAL, { latency: currentLatency });
+                    // 在严重延迟时应用中等延迟控制
+                    this._applyLatencyControl('medium');
+                    break;
+                case 'emergency':
+                    eventBus.emit(PLAYER_EVENTS.LATENCY_EMERGENCY, { latency: currentLatency });
+                    // 在紧急延迟时应用激进延迟控制
+                    this._applyLatencyControl('aggressive');
+                    break;
+                case 'normal':
+                    eventBus.emit(PLAYER_EVENTS.LATENCY_NORMAL, { latency: currentLatency });
+                    // 恢复正常延迟控制
+                    this._applyLatencyControl('normal');
+                    break;
+            }
+        }
+    }
+
+    /**
+     * 计算当前延迟
+     * @returns {number} 延迟秒数
+     */
+    _calculateCurrentLatency() {
+        // 对于直播流，可以通过比较缓冲区末尾和当前播放位置来估算延迟
+        if (!this.video || !this.video.buffered || this.video.buffered.length === 0) {
+            return 0;
+        }
+
+        const currentTime = this.video.currentTime;
+        const bufferedEnd = this.video.buffered.end(this.video.buffered.length - 1);
+
+        // 如果有 mpegts.js 提供的时间戳信息，可以更准确地计算
+        if (this.player && this.player.mediaInfo && this.player.mediaInfo.metadata) {
+            const metadata = this.player.mediaInfo.metadata;
+            if (metadata.hasOwnProperty('serverTimestamp')) {
+                // 如果服务器提供了时间戳，可以计算更准确的延迟
+                const serverTime = metadata.serverTimestamp / 1000; // 转换为秒
+                const clientTime = Date.now() / 1000;
+                return clientTime - serverTime;
+            }
+        }
+
+        // 回退方案：使用缓冲区末尾和当前时间的差值作为延迟估计
+        return bufferedEnd - currentTime;
+
+    }
+
+    /**
+ * 应用延迟控制
+ * @param {string} level - 控制级别：'normal', 'medium', 'aggressive'
+ */
+    _applyLatencyControl(level) {
+        if (!this.player) return;
+
+        // 根据级别应用不同的延迟控制配置
+        switch (level) {
+            case 'aggressive':
+                // 激进模式：最大限度减少延迟
+                this.player.configureSync({
+                    liveBufferLatencyChasing: true,
+                    liveBufferLatencyMaxLatency: 1.0,  // 最大延迟1秒
+                    liveBufferLatencyMinRemain: 0.2    // 最小剩余0.2秒
+                });
+                console.log('[MpegtsAdapter] 应用激进延迟控制策略');
+                break;
+            case 'medium':
+                // 中等模式：平衡延迟和稳定性
+                this.player.configureSync({
+                    liveBufferLatencyChasing: true,
+                    liveBufferLatencyMaxLatency: 3.0,  // 最大延迟3秒
+                    liveBufferLatencyMinRemain: 0.5    // 最小剩余0.5秒
+                });
+                console.log('[MpegtsAdapter] 应用中等延迟控制策略');
+                break;
+            case 'normal':
+            default:
+                // 正常模式：优先稳定性
+                this.player.configureSync({
+                    liveBufferLatencyChasing: true,
+                    liveBufferLatencyMaxLatency: 5.0,  // 最大延迟5秒
+                    liveBufferLatencyMinRemain: 1.0    // 最小剩余1秒
+                });
+                console.log('[MpegtsAdapter] 应用正常延迟控制策略');
+                break;
+        }
+    }
+
+    /**
+    * 绑定 mpegts.js 事件到全局 eventBus
+    * @private
+    */
     _bindEvents() {
         // 错误事件处理（包括连接失败）
         this.player.on(mpegts.Events.ERROR, (error) => {
@@ -549,6 +697,12 @@ class MpegtsAdapter {
         if (this._qualityCheckTimer) {
             clearInterval(this._qualityCheckTimer);
             this._qualityCheckTimer = null;
+        }
+
+        // 清除延迟监控定时器
+        if (this._latencyCheckTimer) {
+            clearInterval(this._latencyCheckTimer);
+            this._latencyCheckTimer = null;
         }
         // 清除超时计时器
         this._clearAllTimers();
