@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-06-13 11:24:11
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-13 11:57:52
+ * @LastEditTime: 2025-06-13 14:36:13
  * @Description: 延迟控制模块，负责监控和控制直播延迟
  */
 import eventBus from '../../events/EventBus';
@@ -60,6 +60,7 @@ class LatencyController {
 
         // 计算当前延迟
         const currentLatency = this._calculateCurrentLatency();
+
         // 根据延迟判断级别
         let latencyLevel = 'normal';
 
@@ -111,17 +112,6 @@ class LatencyController {
 
         const currentTime = this.video.currentTime;
         const bufferedEnd = this.video.buffered.end(this.video.buffered.length - 1);
-
-        // 如果有 mpegts.js 提供的时间戳信息，可以更准确地计算
-        if (this.player && this.player.mediaInfo && this.player.mediaInfo.metadata) {
-            const metadata = this.player.mediaInfo.metadata;
-            if (metadata.hasOwnProperty('serverTimestamp')) {
-                // 如果服务器提供了时间戳，可以计算更准确的延迟
-                const serverTime = metadata.serverTimestamp / 1000; // 转换为秒
-                const clientTime = Date.now() / 1000;
-                return clientTime - serverTime;
-            }
-        }
 
         // 回退方案：使用缓冲区末尾和当前时间的差值作为延迟估计
         return bufferedEnd - currentTime;

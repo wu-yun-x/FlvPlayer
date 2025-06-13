@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-06-13 11:25:18
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-13 13:53:36
+ * @LastEditTime: 2025-06-13 14:08:01
  * @Description: 连接管理模块，负责处理连接、重连和超时
  */
 
@@ -196,7 +196,7 @@ class ConnectionManager {
         if (received && !this._hasReceivedData) {
             this._hasReceivedData = true;
             this._currentRetry = 0; // 重置重试计数
-            console.log(`[MpegtsAdapter] 收到首个媒体数据，总耗时: ${now - this._connectionStartTime}ms`);
+            console.log(`[MpegtsAdapter] 收到首个媒体数据，总耗时: ${Date.now() - this._connectionStartTime}ms`);
         }
     }
 
