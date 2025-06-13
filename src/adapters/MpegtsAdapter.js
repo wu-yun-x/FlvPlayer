@@ -5,6 +5,8 @@
  * @LastEditTime: 2025-06-13 10:41:39
  * @Description: mpegts.js 协议适配器，负责与 mpegts.js 实例交互，提供统一的播放器适配接口
  */
+
+
 import mpegts from 'mpegts.js';
 import eventBus from '../events/EventBus';
 import { detectAndEnableHardwareAcceleration } from '../utils/HardwareAcceleration';
