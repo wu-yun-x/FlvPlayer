@@ -2,11 +2,12 @@
   "name": "flv-player",
   "version": "1.0.0",
   "description": "A FLV player library based on mpegts.js",
-  "main": "dist/flv-player.umd.js",
-  "module": "dist/flv-player.es.js",
+  "main": "src/index.js",
+  "module": "src/index.js",
   "types": "dist/types/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "scripts": {
     "build": "vite build",

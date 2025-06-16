@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-06-13 11:24:11
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-13 14:36:13
+ * @LastEditTime: 2025-06-16 16:32:43
  * @Description: 延迟控制模块，负责监控和控制直播延迟
  */
 import eventBus from '../../events/EventBus';
@@ -130,37 +130,57 @@ class LatencyController {
      */
     _applyLatencyControl(level) {
         if (!this.player) return;
-        // 根据延迟级别应用不同的控制策略
-        // 根据级别应用不同的延迟控制配置
+
+        let config = {};
+
         switch (level) {
             case 'aggressive':
                 // 激进模式：最大限度减少延迟
-                this.player.configureSync({
+                config = {
                     liveBufferLatencyChasing: true,
                     liveBufferLatencyMaxLatency: 1.0,  // 最大延迟1秒
                     liveBufferLatencyMinRemain: 0.2    // 最小剩余0.2秒
-                });
+                };
                 console.log('[LatencyController] 应用激进延迟控制策略');
                 break;
             case 'medium':
                 // 中等模式：平衡延迟和稳定性
-                this.player.configureSync({
+                config = {
                     liveBufferLatencyChasing: true,
                     liveBufferLatencyMaxLatency: 3.0,  // 最大延迟3秒
                     liveBufferLatencyMinRemain: 0.5    // 最小剩余0.5秒
-                });
+                };
                 console.log('[LatencyController] 应用中等延迟控制策略');
                 break;
             case 'normal':
             default:
                 // 正常模式：优先稳定性
-                this.player.configureSync({
+                config = {
                     liveBufferLatencyChasing: true,
                     liveBufferLatencyMaxLatency: 5.0,  // 最大延迟5秒
                     liveBufferLatencyMinRemain: 1.0    // 最小剩余1秒
-                });
+                };
                 console.log('[LatencyController] 应用正常延迟控制策略');
                 break;
+        }
+
+        try {
+            // 尝试使用公共API进行配置更新
+            if (typeof this.player.updateConfig === 'function') {
+                // 如果播放器提供了updateConfig方法，使用该方法
+                this.player.updateConfig(config);
+                console.log('[LatencyController] 已通过API更新播放器配置');
+            } else if (this.player._config) {
+                // 兼容旧版本 - 尝试直接修改_config
+                Object.assign(this.player._config, config);
+                console.log('[LatencyController] 已通过内部属性更新播放器配置');
+            } else {
+                // 最后的挽救措施 - 通过事件通知系统
+                console.log('[LatencyController] 使用事件方式更新延迟设置');
+                eventBus.emit(PLAYER_EVENTS.LATENCY_UPDATE, { config });
+            }
+        } catch (error) {
+            console.error('[LatencyController] 更新配置时出错:', error);
         }
     }
 

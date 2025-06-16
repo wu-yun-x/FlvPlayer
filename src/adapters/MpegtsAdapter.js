@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-06-10 18:03:10
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-13 14:28:31
+ * @LastEditTime: 2025-06-16 11:37:42
  * @Description: mpegts.js 协议适配器，负责与 mpegts.js 实例交互，提供统一的播放器适配接口
  */
 
@@ -17,8 +17,8 @@ import { PLAYER_EVENTS } from '../constants';
 class MpegtsAdapter {
     constructor(video, options) {
         this.video = video;
-        this.config = options.mpegtsConfig;
-        this.mediaDataSource = options.mediaDataSource;
+        this.config = options.mpegtsConfig || {};
+        this.mediaDataSource = options.mediaDataSource || {};
 
         // 创建模块实例
         this.connectionManager = new ConnectionManager({
@@ -50,6 +50,11 @@ class MpegtsAdapter {
     _createPlayer() {
         // 开始连接
         this.connectionManager.connect();
+
+        // 确保mediaDataSource存在
+        if (!this.mediaDataSource) {
+            this.mediaDataSource = {};
+        }
 
         // 创建播放器实例
         this.player = mpegts.createPlayer(this.mediaDataSource, this.config);
@@ -123,12 +128,25 @@ class MpegtsAdapter {
             this.player.destroy();
         }
 
-        this.config.url = url;
+        // 确保config和mediaDataSource存在
+        if (!this.config) {
+            this.config = {};
+        }
+
+        if (!this.mediaDataSource) {
+            this.mediaDataSource = {};
+        }
+
+        // 更新媒体源URL
+        this.mediaDataSource.url = url;
+
         this.connectionManager.reset();
         this._init();
     }
 
-    play() { this.video.play(); }
+    play() {
+        return this.video.play();
+    }
 
     pause() { this.video.pause(); }
 

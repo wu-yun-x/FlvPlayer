@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-06-10 18:03:10
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-12 14:32:37
+ * @LastEditTime: 2025-06-16 16:26:08
  * @Description: 播放器核心类，负责视频元素管理、协议适配、生命周期和事件分发
  */
 import AdapterFactory from '../adapters/AdapterFactory';
@@ -23,7 +23,7 @@ class Player {
      */
     constructor(options) {
         this.options = Object.assign({}, DEFAULT_CONFIG, options); // 播放器配置 合并默认配置
-        this.stateMachine = new StateMachine(); // 状态机
+        this.stateMachine = new StateMachine(PLAYER_STATES.INITIALIZED); // 状态机
         // 创建video元素
         this.video = document.createElement('video');
         this.video.className = 'flv-player-video';
@@ -48,8 +48,15 @@ class Player {
         this.adapter = AdapterFactory.create(type, this.video, options);
         // 绑定video事件
         this._bindVideoEvents();
+        // 设置为IDLE状态
+        this.stateMachine.setState(PLAYER_STATES.IDLE);
+
         // 加载初始url
-        this.adapter.load(options.mediaDataSource.url);
+        if (options.mediaDataSource && options.mediaDataSource.url) {
+            console.log('加载初始url', options.mediaDataSource.url);
+            this.load(options.mediaDataSource.url);
+        }
+
         // 绑定网络质量变化事件
         eventBus.on(PLAYER_EVENTS.NETWORK_QUALITY_CHANGE, this._onNetworkQualityChange.bind(this));
     }
@@ -59,16 +66,52 @@ class Player {
      * @private
      */
     _bindVideoEvents() {
-        this.video.addEventListener('play', () => eventBus.emit(PLAYER_EVENTS.PLAY));
-        this.video.addEventListener('pause', () => eventBus.emit(PLAYER_EVENTS.PAUSE));
-        this.video.addEventListener('ended', () => eventBus.emit(PLAYER_EVENTS.ENDED));
-        this.video.addEventListener('timeupdate', () => eventBus.emit(PLAYER_EVENTS.TIME_UPDATE, this.video.currentTime));
-        this.video.addEventListener('progress', () => eventBus.emit(PLAYER_EVENTS.PROGRESS));
-        this.video.addEventListener('canplay', () => {
+        this.video.addEventListener('play', () => {
+            eventBus.emit(PLAYER_EVENTS.PLAY);
             if (this.stateMachine.getState() !== PLAYER_STATES.PLAYING) {
+                this.stateMachine.setState(PLAYER_STATES.PLAYING);
+            }
+        });
+
+        this.video.addEventListener('pause', () => {
+            eventBus.emit(PLAYER_EVENTS.PAUSE);
+            if (this.stateMachine.getState() === PLAYER_STATES.PLAYING) {
+                this.stateMachine.setState(PLAYER_STATES.PAUSED);
+            }
+        });
+
+        this.video.addEventListener('ended', () => {
+            eventBus.emit(PLAYER_EVENTS.ENDED);
+            this.stateMachine.setState(PLAYER_STATES.ENDED);
+        });
+
+        this.video.addEventListener('timeupdate', () => {
+            eventBus.emit(PLAYER_EVENTS.TIME_UPDATE, this.video.currentTime);
+        });
+
+        this.video.addEventListener('progress', () => {
+            eventBus.emit(PLAYER_EVENTS.PROGRESS);
+        });
+
+        this.video.addEventListener('canplay', () => {
+            // 可以播放时设置为就绪状态
+            if (this.stateMachine.getState() === PLAYER_STATES.LOADING) {
                 this.stateMachine.setState(PLAYER_STATES.READY);
                 eventBus.emit(PLAYER_EVENTS.READY);
             }
+        });
+
+        this.video.addEventListener('waiting', () => {
+            // 缓冲时设置为缓冲状态
+            if (this.stateMachine.getState() === PLAYER_STATES.PLAYING) {
+                this.stateMachine.setState(PLAYER_STATES.BUFFERING);
+                eventBus.emit(PLAYER_EVENTS.BUFFERING);
+            }
+        });
+
+        this.video.addEventListener('error', () => {
+            this.stateMachine.setState(PLAYER_STATES.ERROR);
+            eventBus.emit(PLAYER_EVENTS.ERROR, { source: 'video', code: this.video.error?.code, message: 'Video element error' });
         });
     }
 
@@ -77,14 +120,38 @@ class Player {
      * @returns {Promise|undefined}
      */
     play() {
-        this.stateMachine.setState(PLAYER_STATES.PLAYING);
-        return this.adapter.play();
+        try {
+            // 只有在READY、PAUSED或BUFFERING状态可以播放
+            const currentState = this.stateMachine.getState();
+            if (currentState !== PLAYER_STATES.READY &&
+                currentState !== PLAYER_STATES.PAUSED &&
+                currentState !== PLAYER_STATES.BUFFERING) {
+                console.warn(`[Player] 无法从 ${currentState} 状态开始播放，应处于 READY、PAUSED 或 BUFFERING 状态`);
+            }
+
+            // 播放视频
+            const playPromise = this.video.play();
+
+            // 可能返回Promise或undefined（取决于浏览器）
+            return playPromise;
+        } catch (error) {
+            console.error('[Player] 播放错误:', error);
+            // 设置为错误状态
+            this.stateMachine.setState(PLAYER_STATES.ERROR);
+            eventBus.emit(PLAYER_EVENTS.ERROR, { source: 'player', message: error.message });
+            return Promise.reject(error);
+        }
     }
+
     /** 暂停 */
     pause() {
-        this.stateMachine.setState(PLAYER_STATES.PAUSED);
-        return this.adapter.pause();
+        if (this.stateMachine.getState() === PLAYER_STATES.PLAYING ||
+            this.stateMachine.getState() === PLAYER_STATES.BUFFERING) {
+            this.video.pause();
+            this.stateMachine.setState(PLAYER_STATES.PAUSED);
+        }
     }
+
     /**
      * 事件监听
      * @param {string} event
@@ -123,9 +190,18 @@ class Player {
      * @param {string} url
      */
     load(url) {
-        this.stateMachine.setState(PLAYER_STATES.LOADING);
-        if (this.adapter && typeof this.adapter.load === 'function') {
-            this.adapter.load(url);
+        // 确保从有效状态转换到LOADING状态
+        const currentState = this.stateMachine.getState();
+        if (currentState === PLAYER_STATES.INITIALIZED ||
+            currentState === PLAYER_STATES.IDLE ||
+            currentState === PLAYER_STATES.ERROR ||
+            currentState === PLAYER_STATES.ENDED) {
+            this.stateMachine.setState(PLAYER_STATES.LOADING);
+            if (this.adapter && typeof this.adapter.load === 'function') {
+                this.adapter.load(url);
+            }
+        } else {
+            console.warn(`[Player] 无法从 ${currentState} 状态加载新的URL，请先重置播放器`);
         }
     }
 
@@ -152,7 +228,6 @@ class Player {
      */
     // 网络质量变化处理
     _onNetworkQualityChange(data) {
-        console.log(data, '网络质量变化处理')
         // 更新状态
         this.networkQuality = data.quality;
 

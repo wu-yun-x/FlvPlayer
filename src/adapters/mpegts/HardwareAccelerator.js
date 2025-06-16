@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-06-13 11:25:08
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-13 11:59:00
+ * @LastEditTime: 2025-06-16 13:57:00
  * @Description: 硬件加速模块，负责检测和配置硬件加速
  */
 import eventBus from '../../events/EventBus';
