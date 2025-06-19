@@ -31,7 +31,6 @@ const maxRetriesInput = document.getElementById('maxRetries');
 const retryIntervalInput = document.getElementById('retryInterval');
 const maxRetryIntervalInput = document.getElementById('maxRetryInterval');
 const autoplayCheckbox = document.getElementById('autoplay');
-const showThumbnailsCheckbox = document.getElementById('showThumbnails');
 const bufferSizeInput = document.getElementById('bufferSize');
 const seekToLiveCheckbox = document.getElementById('seekToLive');
 const networkQualitybox = document.getElementById('network-quality');
@@ -184,7 +183,6 @@ function initPlayer() {
     const retryInterval = parseInt(retryIntervalInput.value);
     const maxRetryInterval = parseInt(maxRetryIntervalInput.value);
     const autoplay = !isLive && autoplayCheckbox.checked;
-    const showThumbnails = !isLive && showThumbnailsCheckbox.checked;
     const bufferSize = !isLive ? parseFloat(bufferSizeInput.value) : 1;
     const enableHardwareAcceleration = hwAccelToggle.checked;
     const allowSoftwareRendering = swRenderToggle.checked;
@@ -228,13 +226,6 @@ function initPlayer() {
                 UI_COMPONENT_TYPES.FULLSCREEN
             ],
             alwaysShowProgress: !isLive, // 点播模式下始终显示进度条
-            thumbnails: showThumbnails ? {
-                url: 'https://example.com/thumbnails.jpg', // 缩略图URL，实际项目中需替换
-                width: 160,
-                height: 90,
-                count: 100,
-                columns: 10
-            } : null
         },
         // 根据模式设置不同的配置
         mpegtsConfig: isLive ? {

@@ -85,7 +85,7 @@ const player = new FlvPlayer({
   url: 'ws://localhost:8000/live/stream.flv',
   isLive: true,
   autoplay: true,
-  ui: { controls: true, progress: true, thumbnails: true },
+  ui: { controls: true, progress: true },
   adapter: 'mpegts', // 未来可选 'flvjs', 'hlsjs', 'native'
   // 其他配置...
 });
