@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-06-13 11:25:18
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-13 14:08:01
+ * @LastEditTime: 2025-06-20 17:46:45
  * @Description: 连接管理模块，负责处理连接、重连和超时
  */
 
@@ -84,7 +84,7 @@ class ConnectionManager {
             if (this._currentRetry < this.maxErrorRetries) {
                 this._scheduleRetry();
             } else {
-                console.warn('[ConnectionManager] 达到最大重试次数，停止重连');
+                console.warn('[ConnectionManager] Reached maximum retry count, stopping reconnection');
                 eventBus.emit(PLAYER_EVENTS.RECONNECT_FAILED);
 
                 // 调用销毁回调
@@ -100,14 +100,14 @@ class ConnectionManager {
      * @param {Object} error - 错误信息
      */
     handleError(error) {
-        console.error('[ConnectionManager] 播放器错误:', error);
+        console.error('[ConnectionManager] Player error:', error);
         this._clearAllTimers();
 
         // 检查是否需要重试
         if (this._currentRetry < this.maxErrorRetries) {
             this._scheduleRetry();
         } else {
-            console.warn('[ConnectionManager] 达到最大重试次数，停止重连');
+            console.warn('[ConnectionManager] Reached maximum retry count, stopping reconnection');
             eventBus.emit(PLAYER_EVENTS.RECONNECT_FAILED);
 
             // 调用销毁回调
@@ -138,7 +138,7 @@ class ConnectionManager {
      */
     _scheduleRetry() {
         const delay = this._getRetryDelay();
-        console.log(`[ConnectionManager] 计划第 ${this._currentRetry + 1}/${this.maxErrorRetries} 次重连，延迟: ${delay}ms`);
+        console.log(`[ConnectionManager] Scheduling retry ${this._currentRetry + 1}/${this.maxErrorRetries}, delay: ${delay}ms`);
 
         eventBus.emit(PLAYER_EVENTS.RECONNECTING, {
             attempt: this._currentRetry + 1,
@@ -184,7 +184,7 @@ class ConnectionManager {
         this._isConnected = connected;
 
         if (connected) {
-            console.log(`[ConnectionManager] 连接已建立，耗时: ${Date.now() - this._connectionStartTime}ms`);
+            console.log(`[ConnectionManager] Connection established, time: ${Date.now() - this._connectionStartTime}ms`);
         }
     }
 
@@ -196,7 +196,7 @@ class ConnectionManager {
         if (received && !this._hasReceivedData) {
             this._hasReceivedData = true;
             this._currentRetry = 0; // 重置重试计数
-            console.log(`[MpegtsAdapter] 收到首个媒体数据，总耗时: ${Date.now() - this._connectionStartTime}ms`);
+            console.log(`[MpegtsAdapter] Received first media data, total time: ${Date.now() - this._connectionStartTime}ms`);
         }
     }
 

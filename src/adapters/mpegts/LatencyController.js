@@ -141,7 +141,7 @@ class LatencyController {
                     liveBufferLatencyMaxLatency: 1.0,  // 最大延迟1秒
                     liveBufferLatencyMinRemain: 0.2    // 最小剩余0.2秒
                 };
-                console.log('[LatencyController] 应用激进延迟控制策略');
+                console.log('[LatencyController] Applying aggressive latency control strategy');
                 break;
             case 'medium':
                 // 中等模式：平衡延迟和稳定性
@@ -150,7 +150,7 @@ class LatencyController {
                     liveBufferLatencyMaxLatency: 3.0,  // 最大延迟3秒
                     liveBufferLatencyMinRemain: 0.5    // 最小剩余0.5秒
                 };
-                console.log('[LatencyController] 应用中等延迟控制策略');
+                console.log('[LatencyController] Applying medium latency control strategy');
                 break;
             case 'normal':
             default:
@@ -160,7 +160,7 @@ class LatencyController {
                     liveBufferLatencyMaxLatency: 5.0,  // 最大延迟5秒
                     liveBufferLatencyMinRemain: 1.0    // 最小剩余1秒
                 };
-                console.log('[LatencyController] 应用正常延迟控制策略');
+                console.log('[LatencyController] Applying normal latency control strategy');
                 break;
         }
 
@@ -169,18 +169,18 @@ class LatencyController {
             if (typeof this.player.updateConfig === 'function') {
                 // 如果播放器提供了updateConfig方法，使用该方法
                 this.player.updateConfig(config);
-                console.log('[LatencyController] 已通过API更新播放器配置');
+                console.log('[LatencyController] Player configuration updated via API');
             } else if (this.player._config) {
                 // 兼容旧版本 - 尝试直接修改_config
                 Object.assign(this.player._config, config);
-                console.log('[LatencyController] 已通过内部属性更新播放器配置');
+                console.log('[LatencyController] Player configuration updated via internal properties');
             } else {
                 // 最后的挽救措施 - 通过事件通知系统
-                console.log('[LatencyController] 使用事件方式更新延迟设置');
+                console.log('[LatencyController] Using event system to update latency settings');
                 eventBus.emit(PLAYER_EVENTS.LATENCY_UPDATE, { config });
             }
         } catch (error) {
-            console.error('[LatencyController] 更新配置时出错:', error);
+            console.error('[LatencyController] Error updating configuration:', error);
         }
     }
 

@@ -178,20 +178,6 @@ export const CONNECTION_TYPES = {
 };
 
 /**
- * UI组件类型常量（可扩展）
- */
-export const UI_COMPONENT_TYPES = {
-    PLAY_PAUSE: 'play_pause',
-    PROGRESS: 'progress',
-    TIME_DISPLAY: 'time_display',
-    VOLUME: 'volume',
-    FULLSCREEN: 'fullscreen',
-    PIP: 'pip',
-    SETTINGS: 'settings',
-    THUMBNAIL: 'thumbnail'
-};
-
-/**
  * 统计类型常量
  */
 export const STATS_TYPES = {

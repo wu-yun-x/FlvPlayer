@@ -39,8 +39,8 @@ class Player {
             options.container.appendChild(this.video);
         } else {
             throw new Error(
-                '[FlvPlayer] options.container 必须是一个 CSS 选择器字符串或 HTMLElement 实例，' +
-                `但实际得到的是：${Object.prototype.toString.call(options.container)}`
+                '[FlvPlayer] options.container must be a CSS selector string or HTMLElement instance, ' +
+                `but got: ${Object.prototype.toString.call(options.container)}`
             );
         }
         // 适配器类型（仅mpegts）
@@ -53,7 +53,7 @@ class Player {
 
         // 加载初始url
         if (options.mediaDataSource && options.mediaDataSource.url) {
-            console.log('加载初始url', options.mediaDataSource.url);
+            console.log('Loading initial url', options.mediaDataSource.url);
             this.load(options.mediaDataSource.url);
         }
 
@@ -126,7 +126,7 @@ class Player {
             if (currentState !== PLAYER_STATES.READY &&
                 currentState !== PLAYER_STATES.PAUSED &&
                 currentState !== PLAYER_STATES.BUFFERING) {
-                console.warn(`[Player] 无法从 ${currentState} 状态开始播放，应处于 READY、PAUSED 或 BUFFERING 状态`);
+                console.warn(`[Player] Cannot start playing from ${currentState} state, should be in READY, PAUSED or BUFFERING state`);
             }
 
             // 播放视频
@@ -135,7 +135,7 @@ class Player {
             // 可能返回Promise或undefined（取决于浏览器）
             return playPromise;
         } catch (error) {
-            console.error('[Player] 播放错误:', error);
+            console.error('[Player] Play error:', error);
             // 设置为错误状态
             this.stateMachine.setState(PLAYER_STATES.ERROR);
             eventBus.emit(PLAYER_EVENTS.ERROR, { source: 'player', message: error.message });
@@ -198,7 +198,7 @@ class Player {
     load(url) {
         // 确保从有效状态转换到LOADING状态
         const currentState = this.stateMachine.getState();
-        console.log(currentState, PLAYER_STATES, '[Player] 加载新的视频源')
+        console.log(currentState, PLAYER_STATES, '[Player] Loading new video source')
         if (currentState === PLAYER_STATES.INITIALIZED ||
             currentState === PLAYER_STATES.IDLE ||
             currentState === PLAYER_STATES.ERROR ||
@@ -208,7 +208,7 @@ class Player {
                 this.adapter.load(url);
             }
         } else {
-            console.warn(`[Player] 无法从 ${currentState} 状态加载新的URL，请先重置播放器`);
+            console.warn(`[Player] Cannot load new URL from ${currentState} state, please reset the player first`);
         }
     }
 
@@ -239,7 +239,7 @@ class Player {
         this.networkQuality = data.quality;
 
         // 记录日志
-        console.log(`[Player] 网络质量变化: ${data.quality}, 比特率: ${Math.round(data.bitrate / 1000)}kbps`);
+        console.log(`[Player] Network quality change: ${data.quality}, bitrate: ${Math.round(data.bitrate / 1000)}kbps`);
 
         // 触发UI更新
         eventBus.emit(PLAYER_EVENTS.UI_UPDATE, {
@@ -251,7 +251,7 @@ class Player {
             }
         });
 
-        console.log(`[Player] 网络质量变化: ${data.quality}, 比特率: ${Math.round(data.bitrate / 1000)}kbps`);
+        console.log(`[Player] Network quality change: ${data.quality}, bitrate: ${Math.round(data.bitrate / 1000)}kbps`);
     }
     /**
      * 获取硬件加速信息
