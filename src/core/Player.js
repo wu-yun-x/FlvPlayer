@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-06-10 18:03:10
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-16 16:26:08
+ * @LastEditTime: 2025-06-20 11:57:33
  * @Description: 播放器核心类，负责视频元素管理、协议适配、生命周期和事件分发
  */
 import AdapterFactory from '../adapters/AdapterFactory';
@@ -159,6 +159,12 @@ class Player {
      */
     on(event, handler) { eventBus.on(event, handler); }
     /**
+     * 一次性事件监听
+     * @param {string} event
+     * @param {Function} handler
+     */
+    once(event, handler) { eventBus.once(event, handler); }
+    /**
      * 事件解绑
      * @param {string} event
      * @param {Function} handler
@@ -192,6 +198,7 @@ class Player {
     load(url) {
         // 确保从有效状态转换到LOADING状态
         const currentState = this.stateMachine.getState();
+        console.log(currentState, PLAYER_STATES, '[Player] 加载新的视频源')
         if (currentState === PLAYER_STATES.INITIALIZED ||
             currentState === PLAYER_STATES.IDLE ||
             currentState === PLAYER_STATES.ERROR ||

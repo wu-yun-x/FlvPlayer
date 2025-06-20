@@ -2,18 +2,11 @@
  * @Author: st004362
  * @Date: 2025-06-10 18:03:10
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-11 11:51:06
+ * @LastEditTime: 2025-06-20 17:23:05
  * @Description: 点播（录播）播放器UI组件，结构化分区，黑底白字半透明风格
  * 所有UI元素均有className，便于自定义样式和维护
  */
-import { PLAYER_EVENTS } from '../constants';
 
-/**
- * PlayerUI 负责渲染和管理播放器的用户界面（UI）
- * - 结构分为左中右三块，便于扩展
- * - 通过className实现样式隔离
- * - 事件绑定与解绑规范，防止内存泄漏
- */
 class PlayerUI {
     /**
      * 构造函数，初始化UI
