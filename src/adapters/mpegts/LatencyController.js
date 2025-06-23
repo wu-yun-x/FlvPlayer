@@ -2,7 +2,7 @@
  * @Author: st004362
  * @Date: 2025-06-13 11:24:11
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-16 16:32:43
+ * @LastEditTime: 2025-06-20 17:47:27
  * @Description: 延迟控制模块，负责监控和控制直播延迟
  */
 import eventBus from '../../events/EventBus';
