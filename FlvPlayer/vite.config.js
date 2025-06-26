@@ -22,7 +22,9 @@ export default defineConfig({
                 // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
                 globals: {
                     'mpegts.js': 'mpegts'
-                }
+                },
+                // 使用命名导出模式
+                exports: 'named'
             }
         },
         // 生成 sourcemap

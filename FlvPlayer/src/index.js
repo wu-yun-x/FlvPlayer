@@ -8,5 +8,9 @@
 
 import Player from './core/Player';
 export { Player };
+
+// 导出所有常量
 export * from './constants';
+
+// 默认导出Player
 export default Player;

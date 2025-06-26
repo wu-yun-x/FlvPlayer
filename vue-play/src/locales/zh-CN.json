@@ -1,0 +1,179 @@
+{
+    "player": {
+        "controls": {
+            "play": "播放",
+            "pause": "暂停",
+            "volume": "音量",
+            "mute": "静音",
+            "unmute": "取消静音",
+            "fullscreen": "全屏",
+            "exitFullscreen": "退出全屏",
+            "settings": "设置",
+            "speed": "速度"
+        },
+        "states": {
+            "loading": "加载中",
+            "ready": "就绪",
+            "playing": "播放中",
+            "paused": "已暂停",
+            "ended": "已结束",
+            "error": "错误",
+            "buffering": "缓冲中",
+            "uninitialized": "未初始化"
+        },
+        "errors": {
+            "playError": "播放出错",
+            "retry": "重试",
+            "networkError": "网络错误",
+            "mediaError": "媒体错误",
+            "decodeError": "解码错误"
+        },
+        "time": {
+            "hours": "{0}小时",
+            "minutes": "{0}分钟",
+            "seconds": "{0}秒"
+        }
+    },
+    "ui": {
+        "common": {
+            "initialize": "初始化",
+            "destroy": "销毁",
+            "address": "地址",
+            "status": "状态",
+            "loading": "加载中...",
+            "playbackSpeed": "播放速度",
+            "paused": "暂停",
+            "play": "播放",
+            "LiveStreamingAddress": "直播流地址",
+            "PlaybackAddress": "点播视频地址",
+            "PlaybackAddressPlaceholder": "请输入视频地址",
+            "videoType": {
+                "flv": "FLV",
+                "mp4": "MP4",
+                "unknown": "未知"
+            },
+            "states": {
+                "ready": "就绪",
+                "playing": "播放中",
+                "paused": "已暂停",
+                "ended": "已结束",
+                "error": "错误",
+                "uninitialized": "未初始化"
+            }
+        },
+        "nav": {
+            "realTime": "实时视频",
+            "playback": "录像回放",
+            "examples": "播放器示例"
+        },
+        "realTime": {
+            "title": "实时监控",
+            "controls": "监控控制",
+            "serverUrl": "服务器地址",
+            "reconnect": "自动重连",
+            "lowLatency": "低延迟模式"
+        },
+        "videoPlayback": {
+            "title": "录像回放",
+            "controls": "录像回放控制",
+            "autoplay": "自动播放",
+            "bufferSize": "缓冲区大小(秒)",
+            "hwAccel": {
+                "title": "硬件加速设置",
+                "enable": "启用硬件加速",
+                "allowSoftware": "允许软件渲染 (硬件不支持时)"
+            },
+            "presetVideos": {
+                "title": "预设视频",
+                "video1": {
+                    "name": "示例视频 1 (FLV)",
+                    "type": "FLV"
+                },
+                "video2": {
+                    "name": "示例视频 2 (MP4)",
+                    "type": "MP4"
+                }
+            }
+        },
+        "multiScreen": {
+            "screen": "屏",
+            "loadStream": "加载流",
+            "play": "播放",
+            "showSettings": "高级设置",
+            "hideSettings": "隐藏设置",
+            "fullscreen": "全屏",
+            "exitFullscreen": "退出全屏",
+            "capture": "抓拍",
+            "capturing": "抓拍中...",
+            "serverUrlLabel": "流地址:",
+            "serverUrlPlaceholder": "请输入流媒体服务器地址",
+            "loadModes": {
+                "all": "全部加载",
+                "selective": "选择性加载"
+            },
+            "loading": "加载中...",
+            "screenLabel": "屏幕",
+            "status": {
+                "error": "连接错误",
+                "notConnected": "未连接",
+                "retry": "重试",
+                "currentStatus": "当前状态"
+            },
+            "settings": {
+                "lowLatencyMode": "低延迟模式",
+                "lowLatencyHint": "优化直播延迟，但可能增加卡顿",
+                "autoChasing": "追帧（跳到最新）",
+                "autoReconnect": "自动重连",
+                "debugMode": "调试模式",
+                "maxRetryCount": "最大重试次数:",
+                "retryInterval": "重试间隔(ms):",
+                "maxRetryInterval": "最大重试间隔(ms):",
+                "hardwareAcceleration": "硬件加速设置",
+                "hardwareAccelHint": "尝试启用硬件加速",
+                "softwareFallback": "允许使用软件渲染替代 (如果硬件不支持)",
+                "apply": "应用设置",
+                "reset": "重置"
+            }
+        },
+        "example": {
+            "stats": {
+                "notLoaded": "未加载",
+                "unknown": "未知",
+                "supportStatus": "支持状态",
+                "supported": "支持",
+                "notSupported": "不支持",
+                "currentStatus": "当前状态",
+                "enabled": "已启用",
+                "disabled": "已禁用",
+                "renderMode": "渲染方式",
+                "softwareRendering": "软件渲染 (SwiftShader)",
+                "hardwareRendering": "硬件渲染",
+                "performanceLevel": "性能级别",
+                "renderer": "渲染器",
+                "live": "直播模式",
+                "vod": "点播模式",
+                "advancedOptions": "高级选项",
+                "playerState": "播放器状态",
+                "state": "状态",
+                "networkQuality": "网络质量",
+                "bitrate": "比特率",
+                "bufferHealth": "缓冲健康度",
+                "hardwareInfo": "硬件加速信息",
+                "statsInfo": "统计信息",
+                "eventsLog": "事件日志"
+            },
+            "events": {
+                "modeSwitch": "模式切换",
+                "note": "注意",
+                "suggestion": "建议",
+                "softwareRenderingWarning": "当前使用软件渲染(SwiftShader)。这可能影响性能，但对于不支持硬件加速的系统是正常的。",
+                "highResolutionWarning": "对于高分辨率视频，如果遇到卡顿，可以尝试禁用硬件加速"
+            }
+        },
+        "languages": {
+            "zh-CN": "中文",
+            "en-US": "English",
+            "vi-VN": "Tiếng Việt"
+        }
+    }
+}

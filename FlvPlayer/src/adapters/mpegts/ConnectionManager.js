@@ -2,12 +2,13 @@
  * @Author: st004362
  * @Date: 2025-06-13 11:25:18
  * @LastEditors: ST/St004362
- * @LastEditTime: 2025-06-20 17:46:45
+ * @LastEditTime: 2025-06-26 18:54:13
  * @Description: 连接管理模块，负责处理连接、重连和超时
  */
 
 import eventBus from '../../events/EventBus';
 import { PLAYER_EVENTS, ERROR_TYPES } from '../../constants';
+
 
 class ConnectionManager {
     /**
@@ -63,7 +64,6 @@ class ConnectionManager {
             this._onConnectCallback();
         }
     }
-
     /**
      * 处理超时事件
      * @param {string} reason - 超时原因
@@ -94,6 +94,7 @@ class ConnectionManager {
             }
         }
     }
+   
 
     /**
      * 处理错误事件

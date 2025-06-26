@@ -1,0 +1,179 @@
+{
+  "player": {
+    "controls": {
+      "exitFullscreen": "Exit Fullscreen",
+      "fullscreen": "Fullscreen",
+      "mute": "Mute",
+      "pause": "Pause",
+      "play": "Play",
+      "settings": "Settings",
+      "speed": "Speed",
+      "unmute": "Unmute",
+      "volume": "Volume"
+    },
+    "errors": {
+      "decodeError": "Decode Error",
+      "mediaError": "Media Error",
+      "networkError": "Network Error",
+      "playError": "Playback Error",
+      "retry": "Retry"
+    },
+    "states": {
+      "buffering": "Buffering",
+      "ended": "Ended",
+      "error": "Error",
+      "loading": "Loading",
+      "paused": "Paused",
+      "playing": "Playing",
+      "ready": "Ready",
+      "uninitialized": "Uninitialized"
+    },
+    "time": {
+      "hours": "{0} hours",
+      "minutes": "{0} minutes",
+      "seconds": "{0} seconds"
+    }
+  },
+  "ui": {
+    "common": {
+      "LiveStreamingAddress": "Live streaming address",
+      "PlaybackAddress": "Video on demand address",
+      "PlaybackAddressPlaceholder": "Please enter the video address",
+      "address": "Address",
+      "destroy": "Destroy",
+      "initialize": "Initialize",
+      "loading": "Loading...",
+      "paused": "pause",
+      "play": "play",
+      "playbackSpeed": "Playback Speed",
+      "states": {
+        "ended": "Ended",
+        "error": "error",
+        "paused": "paused",
+        "playing": "Playing",
+        "ready": "be ready",
+        "uninitialized": "not initialized"
+      },
+      "status": "Status",
+      "videoType": {
+        "flv": "FLV",
+        "mp4": "MP4",
+        "unknown": "unknown"
+      }
+    },
+    "nav": {
+      "examples": "Player Examples",
+      "playback": "Video Playback",
+      "realTime": "Real-time Video"
+    },
+    "realTime": {
+      "controls": "Monitor Controls",
+      "lowLatency": "Low Latency Mode",
+      "reconnect": "Auto Reconnect",
+      "serverUrl": "Server URL",
+      "title": "Real-time Monitoring"
+    },
+    "videoPlayback": {
+      "autoplay": "Auto Play",
+      "bufferSize": "Buffer Size (seconds)",
+      "controls": "Playback Controls",
+      "hwAccel": {
+        "allowSoftware": "Allow Software Rendering (when hardware unavailable)",
+        "enable": "Enable Hardware Acceleration",
+        "title": "Hardware Acceleration"
+      },
+      "presetVideos": {
+        "title": "Preset Videos",
+        "video1": {
+          "name": "Example Video 1 (FLV)",
+          "type": "FLV"
+        },
+        "video2": {
+          "name": "Example Video 2 (MP4)",
+          "type": "MP4"
+        }
+      },
+      "title": "Video Playback"
+    },
+    "multiScreen": {
+      "screen": "Screen",
+      "loadStream": "Load Stream",
+      "play": "Play",
+      "showSettings": "Advanced Settings",
+      "hideSettings": "Hide Settings",
+      "fullscreen": "Fullscreen",
+      "exitFullscreen": "Exit Fullscreen",
+      "capture": "Capture",
+      "capturing": "Capturing...",
+      "serverUrlLabel": "Stream URL:",
+      "serverUrlPlaceholder": "Please enter the media stream server address",
+      "loadModes": {
+        "all": "Load All",
+        "selective": "Selective Loading"
+      },
+      "loading": "Loading...",
+      "screenLabel": "Screen",
+      "status": {
+        "error": "Connection Error",
+        "notConnected": "Not Connected",
+        "retry": "Retry",
+        "currentStatus": "Current Status"
+      },
+      "settings": {
+        "lowLatencyMode": "Low Latency Mode",
+        "lowLatencyHint": "Optimize streaming latency, may increase stuttering",
+        "autoChasing": "Frame Chasing (Jump to Latest)",
+        "autoReconnect": "Auto Reconnect",
+        "debugMode": "Debug Mode",
+        "maxRetryCount": "Max Retry Count:",
+        "retryInterval": "Retry Interval (ms):",
+        "maxRetryInterval": "Max Retry Interval (ms):",
+        "hardwareAcceleration": "Hardware Acceleration",
+        "hardwareAccelHint": "Try to enable hardware acceleration",
+        "softwareFallback": "Allow software rendering (if hardware not supported)",
+        "apply": "Apply Settings",
+        "reset": "Reset"
+      }
+    },
+    "example": {
+      "stats": {
+        "notLoaded": "Not Loaded",
+        "unknown": "Unknown",
+        "supportStatus": "Support Status",
+        "supported": "Supported",
+        "notSupported": "Not Supported",
+        "currentStatus": "Current Status",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "renderMode": "Render Mode",
+        "softwareRendering": "Software Rendering (SwiftShader)",
+        "hardwareRendering": "Hardware Rendering",
+        "performanceLevel": "Performance Level",
+        "renderer": "Renderer",
+        "live": "Live Mode",
+        "vod": "Video-on-Demand Mode",
+        "advancedOptions": "Advanced Options",
+        "playerState": "Player State",
+        "state": "State",
+        "networkQuality": "Network Quality",
+        "bitrate": "Bitrate",
+        "bufferHealth": "Buffer Health",
+        "hardwareInfo": "Hardware Acceleration Info",
+        "statsInfo": "Statistics Info",
+        "eventsLog": "Events Log"
+      },
+      "events": {
+        "modeSwitch": "Mode Switch",
+        "note": "Note",
+        "suggestion": "Suggestion",
+        "softwareRenderingWarning": "Currently using software rendering (SwiftShader). This may affect performance, but is normal for systems that don't support hardware acceleration.",
+        "highResolutionWarning": "For high-resolution videos, if you experience stuttering, try disabling hardware acceleration"
+      }
+    },
+    "languages": {
+      "zh-CN": "中文",
+      "en-US": "English",
+      "vi-VN": "Tiếng Việt"
+    }
+  }
+}

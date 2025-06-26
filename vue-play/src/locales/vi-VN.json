@@ -1,0 +1,179 @@
+{
+  "player": {
+    "controls": {
+      "exitFullscreen": "Thoát toàn màn hình",
+      "fullscreen": "Toàn màn hình",
+      "mute": "Tắt tiếng",
+      "pause": "Tạm dừng",
+      "play": "Phát",
+      "settings": "Cài đặt",
+      "speed": "Tốc độ",
+      "unmute": "Bật tiếng",
+      "volume": "Âm lượng"
+    },
+    "errors": {
+      "decodeError": "Lỗi giải mã",
+      "mediaError": "Lỗi phương tiện",
+      "networkError": "Lỗi mạng",
+      "playError": "Lỗi phát",
+      "retry": "Thử lại"
+    },
+    "states": {
+      "buffering": "Đang đệm",
+      "ended": "Đã kết thúc",
+      "error": "Lỗi",
+      "loading": "Đang tải",
+      "paused": "Đã tạm dừng",
+      "playing": "Đang phát",
+      "ready": "Sẵn sàng",
+      "uninitialized": "Chưa khởi tạo"
+    },
+    "time": {
+      "hours": "{0} giờ",
+      "minutes": "{0} phút",
+      "seconds": "{0} giây"
+    }
+  },
+  "ui": {
+    "common": {
+      "LiveStreamingAddress": "Địa chỉ Live Stream",
+      "PlaybackAddress": "Địa chỉ video theo yêu cầu",
+      "PlaybackAddressPlaceholder": "Vui lòng nhập địa chỉ video",
+      "address": "Địa chỉ",
+      "destroy": "Hủy",
+      "initialize": "Khởi tạo",
+      "loading": "Đang tải...",
+      "paused": "Tạm dừng",
+      "play": "Chơi",
+      "playbackSpeed": "Tốc độ phát",
+      "states": {
+        "ended": "Đã kết thúc",
+        "error": "Lỗi",
+        "paused": "Tạm dừng",
+        "playing": "Đang chơi",
+        "ready": "Sẵn sàng",
+        "uninitialized": "Chưa khởi tạo"
+      },
+      "status": "Trạng thái",
+      "videoType": {
+        "flv": "FLV",
+        "mp4": "MP4",
+        "unknown": "Không rõ"
+      }
+    },
+    "nav": {
+      "examples": "Ví dụ trình phát",
+      "playback": "Phát lại video",
+      "realTime": "Video thời gian thực"
+    },
+    "realTime": {
+      "controls": "Điều khiển giám sát",
+      "lowLatency": "Chế độ độ trễ thấp",
+      "reconnect": "Tự động kết nối lại",
+      "serverUrl": "URL máy chủ",
+      "title": "Giám sát thời gian thực"
+    },
+    "videoPlayback": {
+      "autoplay": "Tự động phát",
+      "bufferSize": "Kích thước bộ đệm (giây)",
+      "controls": "Điều khiển phát lại",
+      "hwAccel": {
+        "allowSoftware": "Cho phép kết xuất phần mềm (khi phần cứng không khả dụng)",
+        "enable": "Bật tăng tốc phần cứng",
+        "title": "Tăng tốc phần cứng"
+      },
+      "presetVideos": {
+        "title": "Video mẫu",
+        "video1": {
+          "name": "Video mẫu 1 (FLV)",
+          "type": "FLV"
+        },
+        "video2": {
+          "name": "Video mẫu 2 (MP4)",
+          "type": "MP4"
+        }
+      },
+      "title": "Phát lại video"
+    },
+    "multiScreen": {
+      "screen": "Màn hình",
+      "loadStream": "Tải luồng",
+      "play": "Phát",
+      "showSettings": "Cài đặt nâng cao",
+      "hideSettings": "Ẩn cài đặt",
+      "fullscreen": "Toàn màn hình",
+      "exitFullscreen": "Thoát toàn màn hình",
+      "capture": "Chụp",
+      "capturing": "Đang chụp...",
+      "serverUrlLabel": "URL luồng:",
+      "serverUrlPlaceholder": "Vui lòng nhập địa chỉ máy chủ stream",
+      "loadModes": {
+        "all": "Tải tất cả",
+        "selective": "Tải chọn lọc"
+      },
+      "loading": "Đang tải...",
+      "screenLabel": "Màn hình",
+      "status": {
+        "error": "Lỗi kết nối",
+        "notConnected": "Không kết nối",
+        "retry": "Thử lại",
+        "currentStatus": "Trạng thái hiện tại"
+      },
+      "settings": {
+        "lowLatencyMode": "Chế độ độ trễ thấp",
+        "lowLatencyHint": "Tối ưu hóa độ trễ stream, có thể tăng giật lag",
+        "autoChasing": "Theo dõi khung (Nhảy đến mới nhất)",
+        "autoReconnect": "Tự động kết nối lại",
+        "debugMode": "Chế độ gỡ lỗi",
+        "maxRetryCount": "Số lần thử lại tối đa:",
+        "retryInterval": "Khoảng thời gian thử lại (ms):",
+        "maxRetryInterval": "Khoảng thời gian thử lại tối đa (ms):",
+        "hardwareAcceleration": "Tăng tốc phần cứng",
+        "hardwareAccelHint": "Thử bật tăng tốc phần cứng",
+        "softwareFallback": "Cho phép kết xuất phần mềm (nếu phần cứng không hỗ trợ)",
+        "apply": "Áp dụng cài đặt",
+        "reset": "Đặt lại"
+      }
+    },
+    "example": {
+      "stats": {
+        "notLoaded": "Chưa tải",
+        "unknown": "Không rõ",
+        "supportStatus": "Trạng thái hỗ trợ",
+        "supported": "Được hỗ trợ",
+        "notSupported": "Không được hỗ trợ",
+        "currentStatus": "Trạng thái hiện tại",
+        "enabled": "Đã bật",
+        "disabled": "Đã tắt",
+        "renderMode": "Chế độ kết xuất",
+        "softwareRendering": "Kết xuất phần mềm (SwiftShader)",
+        "hardwareRendering": "Kết xuất phần cứng",
+        "performanceLevel": "Mức hiệu suất",
+        "renderer": "Bộ kết xuất",
+        "live": "Chế độ trực tiếp",
+        "vod": "Chế độ xem theo yêu cầu",
+        "advancedOptions": "Tùy chọn nâng cao",
+        "playerState": "Trạng thái trình phát",
+        "state": "Trạng thái",
+        "networkQuality": "Chất lượng mạng",
+        "bitrate": "Tốc độ bit",
+        "bufferHealth": "Tình trạng bộ đệm",
+        "hardwareInfo": "Thông tin tăng tốc phần cứng",
+        "statsInfo": "Thông tin thống kê",
+        "eventsLog": "Nhật ký sự kiện"
+      },
+      "events": {
+        "modeSwitch": "Chuyển chế độ",
+        "note": "Ghi chú",
+        "suggestion": "Đề xuất",
+        "softwareRenderingWarning": "Hiện đang sử dụng kết xuất phần mềm (SwiftShader). Điều này có thể ảnh hưởng đến hiệu suất, nhưng là bình thường đối với các hệ thống không hỗ trợ tăng tốc phần cứng.",
+        "highResolutionWarning": "Đối với video độ phân giải cao, nếu bạn gặp hiện tượng giật lag, hãy thử tắt tăng tốc phần cứng"
+      }
+    },
+    "languages": {
+      "zh-CN": "中文",
+      "en-US": "English",
+      "vi-VN": "Tiếng Việt"
+    }
+  }
+}
